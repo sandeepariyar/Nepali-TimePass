@@ -25,7 +25,7 @@ fun SplashScreen(appLanguage: AppLanguage = AppLanguage.NEPALI, onToggleLanguage
     val reveal by animateFloatAsState(if (entered) 1f else 0f, tween(360), label = "home_entrance")
     LaunchedEffect(Unit) { entered = true }
     CinemaBackdrop {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize()) {
             Column(Modifier.widthIn(max = 600.dp).fillMaxSize().verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
