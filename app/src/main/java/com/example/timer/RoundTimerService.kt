@@ -60,7 +60,9 @@ class RoundTimerService : Service() {
                 if (current.remainingSeconds != lastSecond) {
                     lastSecond = current.remainingSeconds
                     // Chronometer runs in SystemUI; update text without revealing the secret movie.
-                    manager.notify(ID, notification())
+                    if (Build.VERSION.SDK_INT < 33 || checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                        manager.notify(ID, notification())
+                    }
                     if (lastSecond in 1..10) {
                         audio.isEnabled = RoundTimer.soundEnabled
                         audio.playTick(1f + (10 - lastSecond) * .05f)

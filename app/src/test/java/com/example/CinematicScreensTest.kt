@@ -22,6 +22,17 @@ class CinematicScreensTest {
         compose.onNodeWithTag("splash_continue_button").assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/cinematic-welcome.png")
     }
+    @Test fun setupAndCategoryScreenshots() {
+        val app = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.app.Application>()
+        val vm = com.example.viewmodel.GameViewModel(app, false)
+        vm.dismissSplash()
+        compose.setContent { MyApplicationTheme { GameAppContent(vm) } }
+        compose.onNodeWithTag("start_game_button").assertIsDisplayed()
+        compose.onRoot().captureRoboImage("build/reports/cinematic-setup.png")
+        compose.onNodeWithTag("category_NEPALI").performScrollTo().assertIsDisplayed()
+        compose.onRoot().captureRoboImage("build/reports/cinematic-categories.png")
+        vm.returnToSetup()
+    }
     @Test fun handoffScreenshot() {
         compose.setContent { MyApplicationTheme { ReadyTurnScreen(GameUiState(), {}, {}, {}) } }
         compose.onRoot().captureRoboImage("build/reports/cinematic-ready.png")
