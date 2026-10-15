@@ -11,3 +11,11 @@ The visible activity sets FLAG_KEEP_SCREEN_ON in onResume and clears it in onPau
 At ten seconds remaining (or the first observed value below ten), the service plays a distinct ascending three-tone warning, followed by the remaining per-second ticks. The warning is consumed once per round and does not repeat on pause/resume. Mute, audio focus, silent/vibrate mode and system volume remain respected.
 
 Validation includes existing game/recovery/Compose coverage plus direct-next-team/reveal and once-per-round warning tests. Physical-device display timeout, audio audibility/routing and lock-screen checks remain necessary.
+
+## Approved artwork and interaction pass
+
+The approved Nepali charades artwork is bundled as a 1000px WebP (no network request for the home hero). Its responsive wide composition keeps both actors visible; all headings, language switching and controls remain native. The matching clapperboard/play/Dhaka-topi artwork is used for legacy and adaptive launchers, with a separate monochrome vector for themed icons.
+
+Interaction animation is bounded: 3% button press compression with spring release, a small selected-category scale change, a gang-badge fade/pop when its name changes, animated score changes, and a 360ms home entrance. Compose's animation duration scale is respected. No idle loops were added outside gameplay. The existing gameplay clock remains lifecycle-aware and stops when paused.
+
+Poster discovery now requests a 1024px MediaWiki thumbnail with original fallback before trying the existing summary/image-info fallbacks. Summary parsing prefers its original source and ignores empty/invalid source strings. The original image may still be small. Coil retains its cache and card-bound decoding; a dim crop fills the backdrop while the main poster is fitted without stretching or cropping. The enclosing card retains its 28dp corner radius and native readable title overlay. API response fixtures cover source precedence and missing URLs without live requests.

@@ -4,7 +4,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +52,12 @@ fun CinemaPanel(modifier: Modifier = Modifier, content: @Composable ColumnScope.
 @Composable
 fun CinemaButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier,
     secondary: Boolean = false, enabled: Boolean = true) {
-    Button(onClick, modifier.defaultMinSize(minHeight = 56.dp), enabled = enabled,
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (pressed && enabled) .97f else 1f,
+        spring(dampingRatio = .78f, stiffness = 650f), label = "button_press")
+    Button(onClick, modifier.graphicsLayer { scaleX = scale; scaleY = scale }.defaultMinSize(minHeight = 56.dp), enabled = enabled,
+        interactionSource = interaction,
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(containerColor = if (secondary) ModernCard else ModernAmber,
             contentColor = if (secondary) TextPrimary else ModernBg,
@@ -63,7 +73,9 @@ fun GangScore(team: Team, modifier: Modifier = Modifier, active: Boolean = false
         Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             TeamEmblem(team.id, Color(team.colorHex), size = 56.dp)
             Text(team.name, color = TextPrimary, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium)
-            Text("${team.score}", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = if (active) Color(team.colorHex) else TextPrimary)
+            AnimatedContent(targetState = team.score, label = "score_change") { score ->
+                Text("$score", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = if (active) Color(team.colorHex) else TextPrimary)
+            }
         }
     }
 }

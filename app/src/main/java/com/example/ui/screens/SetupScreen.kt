@@ -1,6 +1,14 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -94,8 +102,11 @@ fun SetupScreen(
                     MovieLanguage.SOUTH_INDIAN -> "दक्षिण भारतीय चलचित्र"
                     else -> "सबै चलचित्र"
                 } else category.displayName
-                FilterChip(selected = category in uiState.settings.selectedLanguages, border = null, shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-                    onClick = { onToggleLanguage(category) }, modifier = Modifier.fillMaxWidth().testTag("category_${category.name}"),
+                val chosen = category in uiState.settings.selectedLanguages
+                val chipScale by animateFloatAsState(if (chosen) 1f else .985f,
+                    spring(stiffness = 600f), label = "category_selection")
+                FilterChip(selected = chosen, border = null, shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    onClick = { onToggleLanguage(category) }, modifier = Modifier.fillMaxWidth().graphicsLayer { scaleX = chipScale; scaleY = chipScale }.testTag("category_${category.name}"),
                     label = { Text(label, modifier = Modifier.padding(vertical = 8.dp)) })
             }
             TextButton(onClick = { onSetLanguagePreset(MovieLanguage.entries.filter { it != MovieLanguage.ALL }.toSet()) }) { Text(if (ne) "सबै मिसाउनुहोस्" else "Mix every cinema") }
@@ -115,7 +126,9 @@ fun SetupScreen(
 private fun GangEditor(team: Team, ne: Boolean, onName: (String) -> Unit, onColor: (Long) -> Unit, onRandom: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            AnimatedContent(targetState = team.name, label = "gang_shuffle") { shuffledName ->
+            AnimatedContent(targetState = team.name,
+                transitionSpec = { (fadeIn() + scaleIn(initialScale = .82f)) togetherWith (fadeOut() + scaleOut(targetScale = .92f)) },
+                label = "gang_shuffle") { shuffledName ->
                 TeamEmblem(team.id, Color(team.colorHex), modifier = Modifier.semantics { contentDescription = shuffledName }, size = 64.dp)
             }
             TextField(team.name, { onName(it.take(48)) }, label = { Text(if (ne) "ग्याङ ${team.id}" else "Gang ${team.id}") },

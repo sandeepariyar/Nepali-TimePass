@@ -1,1 +1,4 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android"><item android:drawable="@drawable/ic_launcher_background"/><item android:width="66dp" android:height="66dp" android:gravity="center" android:drawable="@drawable/ic_timepass_modern"/></layer-list>
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/timepass_icon_art" />
+</layer-list>

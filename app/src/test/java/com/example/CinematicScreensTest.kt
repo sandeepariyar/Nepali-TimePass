@@ -22,6 +22,12 @@ class CinematicScreensTest {
         compose.onNodeWithTag("splash_continue_button").assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/cinematic-welcome.png")
     }
+    @Test fun englishWelcomeKeepsLanguageAndPrimaryActionVisible() {
+        compose.setContent { MyApplicationTheme { SplashScreen(appLanguage = AppLanguage.ENGLISH) {} } }
+        compose.onNodeWithTag("welcome_language_button").assertIsDisplayed()
+        compose.onNodeWithTag("splash_continue_button").assertIsDisplayed().assertTextContains("Let’s play")
+        compose.onRoot().captureRoboImage("build/reports/modern-welcome-english.png")
+    }
     @Test fun setupAndCategoryScreenshots() {
         val app = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.app.Application>()
         val vm = com.example.viewmodel.GameViewModel(app, false)
