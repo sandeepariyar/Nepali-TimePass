@@ -59,7 +59,7 @@ fun ConfettiEffect(
     LaunchedEffect(Unit) {
         progress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 4000, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 1400, easing = LinearEasing)
         )
     }
 
@@ -67,6 +67,7 @@ fun ConfettiEffect(
         val width = size.width
         val height = size.height
         val t = progress.value
+        if (t >= 1f) return@Canvas
 
         particles.forEach { p ->
             val y = p.initialY + (p.speed * t)
@@ -86,3 +87,4 @@ fun ConfettiEffect(
         }
     }
 }
+

@@ -1,165 +1,21 @@
 package com.example.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.EmojiEmotions
-import androidx.compose.material.icons.filled.PanTool
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.ui.theme.ModernAmber
-import com.example.ui.theme.ModernCard
-import com.example.ui.theme.ModernCrimson
-import com.example.ui.theme.ModernEmerald
-import com.example.ui.theme.ModernIndigo
-import com.example.ui.theme.ModernIndigoLight
-import com.example.ui.theme.ModernSurface
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextSecondary
 
 @Composable
-fun RulesDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = ModernSurface,
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Dumb Charades Rules",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = TextMuted)
-                }
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                RuleItem(
-                    icon = Icons.Default.Block,
-                    iconTint = ModernCrimson,
-                    title = "Strictly No Speaking",
-                    description = "The actor cannot speak, whisper, sing, or make vocal sounds. No lip-syncing or mouthing words!"
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                RuleItem(
-                    icon = Icons.Default.PanTool,
-                    iconTint = ModernAmber,
-                    title = "Standard Hand Gestures",
-                    description = "• Show fingers for number of words in title\n• Tap forearm to indicate syllable count\n• Touch ear for 'Sounds like...'\n• Salute for classic/patriotic film"
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                RuleItem(
-                    icon = Icons.Default.EmojiEmotions,
-                    iconTint = ModernEmerald,
-                    title = "Acting & Expressions Only",
-                    description = "Use gestures, dramatic body language, dance steps, signature actor walks, and props in the room to guide your team!"
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                RuleItem(
-                    icon = Icons.Default.CheckCircle,
-                    iconTint = ModernIndigoLight,
-                    title = "Timer & Scoring",
-                    description = "Guess the movie before the timer ends to earn 1 point. If time runs out, 0 points are awarded and the turn passes."
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ModernIndigo,
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Got It! Let's Play", fontWeight = FontWeight.Bold)
-            }
-        }
-    )
-}
-
-@Composable
-private fun RuleItem(
-    icon: ImageVector,
-    iconTint: Color,
-    title: String,
-    description: String
-) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = ModernCard,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier
-                    .size(22.dp)
-                    .padding(top = 2.dp)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column {
-                Text(
-                    text = title,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = description,
-                    fontSize = 11.sp,
-                    color = TextSecondary,
-                    lineHeight = 15.sp
-                )
-            }
-        }
-    }
+fun RulesDialog(onDismiss: () -> Unit, isNepali: Boolean = false) {
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(if (isNepali) "कसरी खेल्ने?" else "A little theatre, a lot of fun.") },
+        text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text(if (isNepali) "१. दुई ग्याङ बनाउनुहोस्। फोन कलाकारलाई दिनुहोस्। फिल्म अरूलाई नदेखाउनुहोस्।" else "1. Make two gangs. Pass the phone to the actor. Keep the film hidden from everyone else.")
+            Text(if (isNepali) "२. नबोली, नगाई, ओठ नचलाइ अभिनय गर्नुहोस्। शब्दको सङ्ख्या औँलाले देखाउनुहोस्।" else "2. Act without speaking, singing or mouthing words. Show the number of words with your fingers.")
+            Text(if (isNepali) "३. समयमा मिल्यो भने १ अङ्क। पास वा समय सकिए ० अङ्क। स्किप गर्दा फिल्म मात्र फेरिन्छ।" else "3. A correct guess earns 1 point. Pass or time-up earns 0. Skip changes the film without ending the turn.")
+            Text(if (isNepali) "४. समय रोक्न ‘रोक्नुहोस्’ थिच्नुहोस्। अन्तिम १० सेकेन्डमा बत्ती र आवाज फेरिन्छन्।" else "4. Pause freezes the countdown and scene effects. The last ten seconds change the lights and percussion.")
+            Text(if (isNepali) "५. पालैपालो खेल्नुहोस्। चाहेको बेला खेलको नतिजा हेर्न सक्नुहुन्छ।" else "5. Take turns. Finish the match whenever your party is ready to crown a winner.")
+        } }, confirmButton = { TextButton(onClick = onDismiss) { Text(if (isNepali) "खेलौँ!" else "Let’s play!") } })
 }
