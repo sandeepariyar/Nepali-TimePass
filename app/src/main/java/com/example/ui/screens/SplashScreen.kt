@@ -28,8 +28,8 @@ fun SplashScreen(appLanguage: AppLanguage = AppLanguage.NEPALI, onToggleLanguage
                 Text(if (ne) "English / नेपाली" else "नेपाली / English", color = ModernAmber)
             }
         }
-        Box(Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
-            Surface(Modifier.size(150.dp).rotate(-12f).offset(x = (-28).dp), color = ModernIndigo, shape = RoundedCornerShape(36.dp)) {
+        Box(Modifier.fillMaxWidth().height(160.dp), contentAlignment = Alignment.Center) {
+            Surface(Modifier.size(136.dp).rotate(-12f).offset(x = (-28).dp), color = ModernIndigo, shape = RoundedCornerShape(36.dp)) {
                 Box(contentAlignment = Alignment.Center) { Icon(Icons.Default.Theaters, null, Modifier.size(76.dp), tint = ModernBg) }
             }
             Surface(Modifier.size(94.dp).rotate(12f).offset(x = 68.dp, y = 42.dp), color = ModernAmber, shape = RoundedCornerShape(28.dp)) {
