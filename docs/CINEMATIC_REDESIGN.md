@@ -40,9 +40,9 @@ Generated using the built-in imagegen tool, then resized/encoded as WebP with al
 | gang_lion.webp | Transparent carved timber/brass lion cinema crest | 382 × 408 |
 | gang_panda.webp | Transparent red panda/madal crest | 403 × 384 |
 
-Generation prompts: premium hand-painted Kathmandu/Newari cinema courtyard at festival dusk, carved timber, small brass marquee bulbs, marigolds, indigo and burgundy shadows, quiet dark central negative space, two small contemporary Nepali friends at bottom corners; no text or UI. Separate transparent crest prompts specified a brass lion with cinema sunglasses/film reel and a Himalayan red panda with madal, both in Newari-inspired carved timber shields, marigolds, no text, generous transparent margin. Full original generated PNGs are reproducible source artwork; optimized runtime files are committed.
+Generation prompts: premium hand-painted Kathmandu/Newari cinema courtyard at festival dusk, carved timber, small brass marquee bulbs, marigolds, indigo and burgundy shadows, quiet dark central negative space, two small contemporary Nepali friends at bottom corners; no text or UI. Separate transparent crest prompts specified a brass lion with cinema sunglasses/film reel and a Himalayan red panda with madal, both in Newari-inspired carved timber shields, marigolds, no text, generous transparent margin. The original generated PNGs were shown in the task conversation; optimized runtime files are committed.
 
-The existing launcher WebPs contained UTF-8-encoded binary bytes in the base repository. They were decoded back to valid image bytes without changing their visual design. Original legacy background assets are retained on the branch.
+The adaptive launcher now uses the lion crest on an indigo background. The existing legacy launcher WebPs contained UTF-8-encoded binary bytes in the base repository. They were decoded back to valid image bytes without changing their visual design. Original legacy background assets are retained on the branch.
 
 ## Verification and manual acceptance
 
@@ -59,3 +59,16 @@ Before device release, verify on Android 13, 14, 15 and 16:
 7. Remove the task while a round runs, reopen before and after expiry, kill the process, and reboot. Persisted state should restore/replay appropriately without duplicate points. Exact deck order is intentionally not retained.
 
 Limits: force-stop, Android's foreground-service Task Manager stop, reboot, OEM process termination and explicit device restrictions can prevent background audio. No exact alarm is used to defeat these decisions. The app recovers elapsed state when opened, but cannot promise a sound after forced termination. Physical-device lock-screen/audio-focus/OEM behavior and Play approval cannot be established by a JVM test or debug build.
+
+## Recorded UI previews
+
+These are captures of the running Compose UI under Robolectric native graphics, rather than image mockups: [welcome](previews/welcome.webp), [setup](previews/setup.webp), [gameplay in Nepali](previews/nepali-small.webp), [landscape](previews/landscape.webp), [handoff](previews/ready.webp), [winner](previews/winner.webp).
+
+## Local validation result — 15 October 2026
+
+- Gradle 9.3.1, JDK 17, Android platform 36.1; debug APK assembled successfully at `app/build/outputs/apk/debug/app-debug.apk` (about 23 MB).
+- 27 JVM/Robolectric/Compose tests passed, including deadline recovery and persistence, duplicate interactions, pause controls, secret-film reveal, setup/categories, landscape and Devanagari rendering.
+- `lintDebug` passed with zero errors. Eighteen advisory warnings concern retained unused resources, dependency update suggestions, KTX conveniences and a redundant label; no lint baseline or disabled error checks were used.
+- Recorded screenshots were visually reviewed. Phone layout captures use 360 × 640 dp; landscape uses 800 × 360 dp. These do not replace physical-device rotation, lock-screen, audio and accessibility checks.
+- Validation command: `./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug -Proborazzi.test.record=true`. Local validation used the same Gradle distribution directly while preparing the missing wrapper. Dependencies were downloaded online, then the final check also ran with the cache in offline mode.
+- The first CI attempt failed in SDK setup because an action default requested the removed `tools` package. The workflow now specifies the supported command-line tools and `platform-tools`, and coalesces duplicate push/PR runs by branch.

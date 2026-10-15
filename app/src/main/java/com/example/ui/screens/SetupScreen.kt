@@ -98,7 +98,7 @@ fun SetupScreen(
                     onClick = { onToggleLanguage(category) }, modifier = Modifier.fillMaxWidth().testTag("category_${category.name}"),
                     label = { Text(label, modifier = Modifier.padding(vertical = 8.dp)) })
             }
-            TextButton(onClick = { onSetLanguagePreset(setOf(MovieLanguage.ALL)) }) { Text(if (ne) "सबै मिसाउनुहोस्" else "Mix every cinema") }
+            TextButton(onClick = { onSetLanguagePreset(MovieLanguage.entries.filter { it != MovieLanguage.ALL }.toSet()) }) { Text(if (ne) "सबै मिसाउनुहोस्" else "Mix every cinema") }
             Text(if (ne) "${uiState.totalMoviesCount} चलचित्र तयार" else "${uiState.totalMoviesCount} films ready", color = TextSecondary)
             Text(if (uiState.isOnlineSyncing) { if (ne) "नयाँ चलचित्र थपिँदैछन्…" else "Bringing in more films…" }
                 else { if (ne) "अनलाइन चलचित्र र पोस्टर उपलब्ध छन्" else "Online films and posters available" }, color = TextSecondary)
