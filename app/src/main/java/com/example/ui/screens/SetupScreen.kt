@@ -115,8 +115,8 @@ fun SetupScreen(
 private fun GangEditor(team: Team, ne: Boolean, onName: (String) -> Unit, onColor: (Long) -> Unit, onRandom: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            AnimatedContent(targetState = team.name, label = "gang_shuffle") {
-                TeamEmblem(team.id, Color(team.colorHex), size = 64.dp)
+            AnimatedContent(targetState = team.name, label = "gang_shuffle") { shuffledName ->
+                TeamEmblem(team.id, Color(team.colorHex), modifier = Modifier.semantics { contentDescription = shuffledName }, size = 64.dp)
             }
             OutlinedTextField(team.name, { onName(it.take(48)) }, label = { Text(if (ne) "ग्याङ ${team.id}" else "Gang ${team.id}") },
                 modifier = Modifier.weight(1f).testTag("team_${team.id}_name"), maxLines = 2)

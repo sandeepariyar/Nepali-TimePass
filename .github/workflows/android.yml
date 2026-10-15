@@ -19,7 +19,7 @@ jobs:
         with:
           gradle-version: '9.3.1'
       - run: sdkmanager 'platforms;android-36.1' 'build-tools;36.0.0'
-      - run: gradle :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --console=plain
+      - run: gradle :app:assembleDebug :app:testDebugUnitTest :app:lintDebug -Proborazzi.test.record=true --console=plain
       - uses: actions/upload-artifact@v4
         if: always()
         with:

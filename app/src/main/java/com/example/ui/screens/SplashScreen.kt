@@ -13,9 +13,9 @@ import com.example.ui.theme.*
 @Composable
 fun SplashScreen(onContinue: () -> Unit) {
     CinemaScene {
-        Spacer(Modifier.height(100.dp))
+        Spacer(Modifier.height(48.dp))
         CinemaHeading("KATHMANDU AFTER DARK", "नेपाली\nटाइमपास", "YOUR GANG. YOUR STAGE.\nA little drama. A lot of laughter.")
-        Spacer(Modifier.height(30.dp))
+        Spacer(Modifier.height(8.dp))
         CinemaPanel {
             Text("फिल्म चिन्नुहोस्। अभिनय देखाउनुहोस्।", color = TextPrimary, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             Text("Nepali cinema • Bollywood • South cinema", color = TextSecondary, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())

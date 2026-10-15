@@ -79,6 +79,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
             RoundTimer.restore(application, saved.deadline, saved.remaining, saved.running,
                 _uiState.value.settings.soundEffectsEnabled, _uiState.value.appLanguage == AppLanguage.NEPALI)
         }
+        if (_uiState.value.phase == GamePhase.ACTING) monitorTimer()
         viewModelScope.launch {
             _uiState.collect { state ->
                 store.save(state, RoundTimer.deadline(), RoundTimer.remainingMillis(), RoundTimer.state.value.running)
@@ -125,6 +126,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     }
 
     fun dismissSplash() {
+        soundEffects.playUiTap()
         _uiState.update {
             if (it.phase == GamePhase.SPLASH) it.copy(phase = GamePhase.SETUP) else it
         }
@@ -174,6 +176,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     }
 
     fun randomizeGangNames() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val newPair = NepaliGangNames.getRandomPair()
         _uiState.update {
@@ -185,6 +188,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     }
 
     fun randomizeTeam1Name() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val single = NepaliGangNames.getRandomSingleGang(excludeName = _uiState.value.team2.name)
         _uiState.update {
@@ -195,6 +199,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     }
 
     fun randomizeTeam2Name() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val single = NepaliGangNames.getRandomSingleGang(excludeName = _uiState.value.team1.name)
         _uiState.update {
@@ -317,6 +322,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     }
 
     fun togglePauseTimer() {
+        soundEffects.playUiTap()
         if (_uiState.value.phase != GamePhase.ACTING) return
         RoundTimer.toggle(getApplication())
     }
@@ -520,6 +526,10 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
     private fun startTimer(durationSeconds: Int) {
         RoundTimer.start(getApplication(), durationSeconds, _uiState.value.settings.soundEffectsEnabled,
             _uiState.value.appLanguage == AppLanguage.NEPALI)
+        monitorTimer()
+    }
+
+    private fun monitorTimer() {
         // Fallback also keeps visible gameplay correct if the OS rejects service startup.
         timerJob?.cancel()
         timerJob = viewModelScope.launch {

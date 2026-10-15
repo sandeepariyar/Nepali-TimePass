@@ -4,7 +4,7 @@ Branch: `feature/nepali-cinematic-ui`; base: `c25f20b98e3692288912275088eecdebb6
 
 ## Implementation
 
-- Kotlin and Compose retained. Existing Wikipedia film discovery, online poster providers, movie catalogues, custom-film model, 34-pair Nepali gang generator, category selection and scoring remain in place.
+- Kotlin and Compose retained. Existing Wikipedia film discovery, online poster providers, movie catalogues, custom-film model, 32-pair Nepali gang generator, category selection and scoring remain in place.
 - Welcome/menu, setup/category selection, editable gang names and colours, actor handoff, active round, correct/pass/time-up summary, winners, settings and bilingual help share the cinema courtyard design system. Skip transitions change only the movie; pass ends the turn. Movie titles, gang names, countdown and controls are native UI.
 - Kathmandu/Newari-inspired dusk courtyard illustration, carved timber, brass, marigolds and vermilion/indigo palette. Two transparent illustrated gang crests (lion and red panda with madal) have native team-colour surrounds. Team identity follows team slot; generated gang names remain freely editable.
 - Timer progress is a row of extinguishing marquee bulbs. Final ten seconds warm the light and introduce slow embers. It uses inexpensive Canvas drawing, with no runtime shader or GPU feature requirement. One frame clock runs only on the gameplay screen while resumed and unpaused. Other animations are finite transitions; winner confetti ends after 1.4 seconds.
@@ -38,7 +38,7 @@ Generated using the built-in imagegen tool, then resized/encoded as WebP with al
 |---|---|---|
 | cinema_courtyard.webp | Shared static full-bleed background, quiet centre for native UI | 864 × 1296 |
 | gang_lion.webp | Transparent carved timber/brass lion cinema crest | 382 × 408 |
-| gang_panda.webp | Transparent red panda/madal crest | 408 × 384 |
+| gang_panda.webp | Transparent red panda/madal crest | 403 × 384 |
 
 Generation prompts: premium hand-painted Kathmandu/Newari cinema courtyard at festival dusk, carved timber, small brass marquee bulbs, marigolds, indigo and burgundy shadows, quiet dark central negative space, two small contemporary Nepali friends at bottom corners; no text or UI. Separate transparent crest prompts specified a brass lion with cinema sunglasses/film reel and a Himalayan red panda with madal, both in Newari-inspired carved timber shields, marigolds, no text, generous transparent margin. Full original generated PNGs are reproducible source artwork; optimized runtime files are committed.
 
