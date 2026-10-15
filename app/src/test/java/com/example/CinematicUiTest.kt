@@ -24,7 +24,7 @@ class CinematicUiTest {
             MyApplicationTheme {
                 ActingScreen(GameUiState(phase = GamePhase.ACTING,
                     appLanguage = if (nepali) AppLanguage.NEPALI else AppLanguage.ENGLISH,
-                    currentMovie = Movie("qa", "The Courtyard After Dark", "काठमाडौँको साँझको चलचित्र", 2026, MovieLanguage.NEPALI, "Drama"),
+                    currentMovie = Movie("qa", "The Courtyard After Dark", "काठमाडौँको साँझको चलचित्र", 2026, MovieLanguage.NEPALI, "Drama", posterUrl = "file:///nonexistent-test-poster"),
                     isCardRevealed = reveal, isTimerPaused = true, remainingSeconds = 9),
                     onToggleReveal = { reveal = !reveal }, onTogglePauseTimer = {}, onGuessCorrect = {},
                     onGuessWrongOrPass = {}, onSkipMovie = {}, onConcludeGame = {})

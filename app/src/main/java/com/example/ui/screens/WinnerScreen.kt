@@ -20,13 +20,13 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
     Box(Modifier.fillMaxSize()) {
     CinemaScene {
         TeamEmblem(winner.id, Color(winner.colorHex), size = 144.dp)
-        CinemaHeading(if (ne) "आजको सुपरहिट" else "TONIGHT’S BLOCKBUSTER",
+        CinemaHeading(if (ne) "खेलको नतिजा" else "Final score",
             if (tie) { if (ne) "दुवै ग्याङ विजेता!" else "A glorious draw!" } else winner.name,
-            if (ne) "ताली बजाउनुहोस्!" else "Take a bow. You earned it.")
+            if (ne) "ताली बजाउनुहोस्!" else "That’s a win for the group chat.")
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GangScore(uiState.team1, Modifier.weight(1f)); GangScore(uiState.team2, Modifier.weight(1f))
         }
-        CinemaButton(if (ne) "फेरि खेलौँ" else "PLAY THE SEQUEL", onPlayAgain, Modifier.fillMaxWidth().testTag("play_again_button"))
+        CinemaButton(if (ne) "फेरि खेलौँ" else "Play again", onPlayAgain, Modifier.fillMaxWidth().testTag("play_again_button"))
         CinemaButton(if (ne) "नयाँ सेटअप" else "New setup", onReturnToSetup, Modifier.fillMaxWidth().testTag("new_game_setup_button"), secondary = true)
         if (uiState.roundHistory.isNotEmpty()) CinemaPanel {
             Text(if (ne) "खेल विवरण" else "THE CREDITS", color = ModernAmber)

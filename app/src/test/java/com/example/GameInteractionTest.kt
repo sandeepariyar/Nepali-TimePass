@@ -46,6 +46,15 @@ class GameInteractionTest {
         vm.onGuessCorrect()
         assertEquals(0, vm.uiState.value.team1.score)
     }
+    @Test fun correctAdvancesStraightToHandoffAndStartRevealsFilm() {
+        vm.startTurn(); vm.onGuessCorrect()
+        assertEquals(GamePhase.READY_TURN, vm.uiState.value.phase)
+        assertEquals(2, vm.uiState.value.activeTeamId)
+        assertNotNull(vm.uiState.value.lastRoundResult)
+        vm.startTurn()
+        assertTrue(vm.uiState.value.isCardRevealed)
+        assertNull(vm.uiState.value.lastRoundResult)
+    }
     @Test fun invalidDurationsAreRejected() {
         vm.returnToSetup(); vm.updateTimerDuration(600); vm.updateTimerDuration(9999)
         assertEquals(600, vm.uiState.value.settings.timerDurationSeconds)

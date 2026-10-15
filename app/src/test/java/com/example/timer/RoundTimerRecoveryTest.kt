@@ -35,6 +35,15 @@ class RoundTimerRecoveryTest {
         ShadowSystemClock.advanceBy(Duration.ofMillis(1))
         assertTrue(RoundTimer.tick().expired)
     }
+    @Test fun warningIsConsumedOncePerRoundEvenAfterPauseResume() {
+        RoundTimer.start(app, 30, false, false)
+        assertFalse(RoundTimer.consumeTenSecondWarning(11))
+        assertTrue(RoundTimer.consumeTenSecondWarning(10))
+        RoundTimer.toggle(app); RoundTimer.toggle(app)
+        assertFalse(RoundTimer.consumeTenSecondWarning(9))
+        RoundTimer.start(app, 30, false, false)
+        assertTrue(RoundTimer.consumeTenSecondWarning(9))
+    }
     @Test fun savedSettingsCustomFilmsAndScoresRoundTrip() {
         val store = GameSessionStore(app)
         val movie = Movie("custom_qa", "A custom film", "आफ्नै चलचित्र", 2026, MovieLanguage.NEPALI, "Drama")

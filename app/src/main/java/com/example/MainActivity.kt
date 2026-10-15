@@ -1,6 +1,7 @@
 package com.example
 
 import android.os.Bundle
+import android.view.WindowManager
 import android.os.Build
 import android.Manifest
 import android.content.pm.PackageManager
@@ -95,6 +96,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    override fun onResume() {
+        super.onResume()
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+    override fun onPause() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onPause()
+    }
     companion object { private var imageLoaderConfigured = false }
 }
 
@@ -129,6 +138,8 @@ fun GameAppContent(
         when (phase) {
             GamePhase.SPLASH -> {
                 SplashScreen(
+                    appLanguage = uiState.appLanguage,
+                    onToggleLanguage = viewModel::toggleAppLanguage,
                     onContinue = viewModel::dismissSplash
                 )
             }

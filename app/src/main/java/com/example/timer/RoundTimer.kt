@@ -22,6 +22,13 @@ object RoundTimer {
         set(value) { soundMutable.value = value }
     var nepali = true
     private var sessionCounter = 0L
+    private var warningSession = 0L
+    fun consumeTenSecondWarning(seconds: Int): Boolean {
+        val session = mutable.value.session
+        if (session == 0L || seconds !in 1..10 || warningSession == session) return false
+        warningSession = session
+        return true
+    }
     fun start(context: Context, seconds: Int, sound: Boolean, isNepali: Boolean) {
         soundEnabled = sound; nepali = isNepali
         clock.start(seconds * 1000L)
