@@ -56,7 +56,8 @@ import com.example.ui.theme.TextSecondary
 @Composable
 fun AddCustomMovieDialog(
     onDismiss: () -> Unit,
-    onAddCustomMovie: (Movie) -> Unit
+    onAddCustomMovie: (Movie) -> Unit,
+    isNepali: Boolean = false
 ) {
     var customTitle by remember { mutableStateOf("") }
     var customNativeTitle by remember { mutableStateOf("") }
@@ -103,13 +104,13 @@ fun AddCustomMovieDialog(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "Add Secret Movie",
+                                text = (if (isNepali) "गोप्य चलचित्र थप्नुहोस्" else "Add Secret Movie"),
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
                             Text(
-                                text = "Added directly into mystery deck",
+                                text = (if (isNepali) "खेलको चलचित्र सूचीमा थपिन्छ" else "Added directly into mystery deck"),
                                 fontSize = 11.sp,
                                 color = TextMuted
                             )
@@ -141,7 +142,7 @@ fun AddCustomMovieDialog(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Anti-cheat: The movie will be kept confidential in the deck until drawn during a turn.",
+                            text = (if (isNepali) "यो चलचित्र पालोमा नआएसम्म गोप्य रहनेछ।" else "Anti-cheat: The movie will be kept confidential in the deck until drawn during a turn."),
                             fontSize = 11.sp,
                             color = TextSecondary,
                             lineHeight = 15.sp
@@ -154,8 +155,8 @@ fun AddCustomMovieDialog(
                 OutlinedTextField(
                     value = customTitle,
                     onValueChange = { customTitle = it },
-                    label = { Text("Movie Title (English)") },
-                    placeholder = { Text("e.g. Chhakka Panja", color = TextMuted) },
+                    label = { Text((if (isNepali) "चलचित्रको नाम (अङ्ग्रेजी)" else "Movie Title (English)")) },
+                    placeholder = { Text((if (isNepali) "जस्तै: Chhakka Panja" else "e.g. Chhakka Panja"), color = TextMuted) },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -178,8 +179,8 @@ fun AddCustomMovieDialog(
                 OutlinedTextField(
                     value = customNativeTitle,
                     onValueChange = { customNativeTitle = it },
-                    label = { Text("Native Script (नेपाली / हिन्दी)") },
-                    placeholder = { Text("e.g. छक्का पन्जा", color = TextMuted) },
+                    label = { Text((if (isNepali) "देवनागरी नाम (नेपाली / हिन्दी)" else "Native Script (नेपाली / हिन्दी)")) },
+                    placeholder = { Text((if (isNepali) "जस्तै: छक्का पन्जा" else "e.g. छक्का पन्जा"), color = TextMuted) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -204,7 +205,7 @@ fun AddCustomMovieDialog(
                     OutlinedTextField(
                         value = customYear,
                         onValueChange = { customYear = it },
-                        label = { Text("Year") },
+                        label = { Text((if (isNepali) "वर्ष" else "Year")) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
@@ -222,7 +223,7 @@ fun AddCustomMovieDialog(
                     OutlinedTextField(
                         value = customGenre,
                         onValueChange = { customGenre = it },
-                        label = { Text("Genre") },
+                        label = { Text((if (isNepali) "विधा" else "Genre")) },
                         singleLine = true,
                         modifier = Modifier.weight(1.5f),
                         shape = RoundedCornerShape(12.dp),
@@ -244,8 +245,8 @@ fun AddCustomMovieDialog(
                 OutlinedTextField(
                     value = customActors,
                     onValueChange = { customActors = it },
-                    label = { Text("Star Cast (Optional)") },
-                    placeholder = { Text("e.g. Deepak Raj Giri, Priyanka Karki", color = TextMuted) },
+                    label = { Text((if (isNepali) "कलाकार (ऐच्छिक)" else "Star Cast (Optional)")) },
+                    placeholder = { Text((if (isNepali) "जस्तै: दीपकराज गिरी, प्रियङ्का कार्की" else "e.g. Deepak Raj Giri, Priyanka Karki"), color = TextMuted) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -288,7 +289,7 @@ fun AddCustomMovieDialog(
                                 difficulty = MovieDifficulty.MEDIUM
                             )
                             onAddCustomMovie(newMovie)
-                            addSuccessMsg = "Added '${newMovie.title}' to the secret deck!"
+                            addSuccessMsg = if (isNepali) "चलचित्र खेलमा थपियो!" else "Added '${newMovie.title}' to the secret deck!"
                             customTitle = ""
                             customNativeTitle = ""
                             customActors = ""
@@ -309,7 +310,7 @@ fun AddCustomMovieDialog(
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "ADD TO GAME DECK",
+                        text = (if (isNepali) "खेलमा थप्नुहोस्" else "ADD TO GAME DECK"),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
                         letterSpacing = 0.5.sp
@@ -319,3 +320,4 @@ fun AddCustomMovieDialog(
         }
     }
 }
+

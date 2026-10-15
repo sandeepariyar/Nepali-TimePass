@@ -3,7 +3,8 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/ic_charades_logo_1788175472123"
+        android:drawable="@drawable/gang_lion"
         android:gravity="center" />
 </layer-list>
+
 

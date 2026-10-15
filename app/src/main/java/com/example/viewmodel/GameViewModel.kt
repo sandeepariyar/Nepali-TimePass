@@ -2,6 +2,7 @@ package com.example.viewmodel
 
 import android.app.Application
 import android.content.Context
+import com.example.timer.RoundTimer
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -9,6 +10,7 @@ import android.os.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.audio.GameSoundEffects
+import com.example.data.GameSessionStore
 import com.example.data.MovieRepository
 import com.example.data.NepaliGangNames
 import com.example.data.OnlineFilmDirectory
@@ -48,21 +50,53 @@ data class GameUiState(
     val totalMoviesCount: Int = 0,
     val isOnlineSyncing: Boolean = false,
     val onlineStatusText: String = "Connected to Movie Database",
+    val roundInterrupted: Boolean = false,
+    val backgroundTimerUnavailable: Boolean = false,
     val lastRoundResult: RoundRecord? = null
 )
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel @JvmOverloads constructor(application: Application, private val networkEnabled: Boolean = true) : AndroidViewModel(application) {
 
     val repository = MovieRepository()
-    private val soundEffects = GameSoundEffects()
+    private val soundEffects = GameSoundEffects(application)
 
-    private val _uiState = MutableStateFlow(GameUiState())
+    private val store = GameSessionStore(application)
+    private val saved = store.load()
+    private val _uiState = MutableStateFlow(saved?.game?.let {
+        if (it.phase == GamePhase.ACTING && saved?.sameBoot == false) it.copy(phase = GamePhase.READY_TURN,
+            currentMovie = null, isTimerRunning = false, isTimerPaused = false, roundInterrupted = true)
+        else it
+    } ?: GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     private var timerJob: Job? = null
     private var movieDeck = mutableListOf<Movie>()
 
     init {
+        soundEffects.isEnabled = _uiState.value.settings.soundEffectsEnabled
+        store.loadCustom().forEach(repository::addCustomMovie)
+        if (_uiState.value.phase == GamePhase.ACTING && RoundTimer.state.value.session == 0L && saved != null) {
+            RoundTimer.restore(application, saved.deadline, saved.remaining, saved.running,
+                _uiState.value.settings.soundEffectsEnabled, _uiState.value.appLanguage == AppLanguage.NEPALI)
+        }
+        if (_uiState.value.phase == GamePhase.ACTING) monitorTimer()
+        viewModelScope.launch {
+            _uiState.collect { state ->
+                store.save(state, RoundTimer.deadline(), RoundTimer.remainingMillis(), RoundTimer.state.value.running)
+            }
+        }
+        viewModelScope.launch { repository.customMovies.collect { store.saveCustom(it) } }
+        viewModelScope.launch {
+            RoundTimer.state.collect { timer ->
+                if (_uiState.value.phase == GamePhase.ACTING && timer.session != 0L) {
+                    _uiState.update { it.copy(remainingSeconds = timer.remainingSeconds,
+                        isTimerRunning = timer.running, isTimerPaused = !timer.running && !timer.expired,
+                        backgroundTimerUnavailable = timer.unavailable) }
+                    if (timer.expired) onTimeUp()
+                }
+            }
+        }
+
         refreshMovieCount()
         // Collect live streaming status from OnlineFilmDirectory
         viewModelScope.launch {
@@ -81,10 +115,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         // Preload posters in background immediately
-        viewModelScope.launch(Dispatchers.IO) {
+        if (networkEnabled) viewModelScope.launch(Dispatchers.IO) {
             try {
                 val allMovies = repository.getAllMovies(MovieLanguage.ALL)
-                WikipediaPosterRepository.preloadAllPosters(allMovies)
+                allMovies.take(4).forEach { WikipediaPosterRepository.fetchPosterForMovie(it) }
                 repository.fetchLimitlessOnline(MovieLanguage.ALL)
             } catch (_: Exception) {
             }
@@ -92,6 +126,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun dismissSplash() {
+        soundEffects.playUiTap()
         _uiState.update {
             if (it.phase == GamePhase.SPLASH) it.copy(phase = GamePhase.SETUP) else it
         }
@@ -141,6 +176,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun randomizeGangNames() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val newPair = NepaliGangNames.getRandomPair()
         _uiState.update {
@@ -152,6 +188,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun randomizeTeam1Name() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val single = NepaliGangNames.getRandomSingleGang(excludeName = _uiState.value.team2.name)
         _uiState.update {
@@ -162,6 +199,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun randomizeTeam2Name() {
+        soundEffects.playUiTap()
         val currentLang = _uiState.value.appLanguage
         val single = NepaliGangNames.getRandomSingleGang(excludeName = _uiState.value.team1.name)
         _uiState.update {
@@ -172,6 +210,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateTimerDuration(seconds: Int) {
+        if (seconds !in 30..600 || _uiState.value.phase == GamePhase.ACTING) return
         _uiState.update {
             it.copy(
                 settings = it.settings.copy(timerDurationSeconds = seconds),
@@ -208,12 +247,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun toggleSoundEffects() {
         val newEnabled = !_uiState.value.settings.soundEffectsEnabled
         soundEffects.isEnabled = newEnabled
+        RoundTimer.soundEnabled = newEnabled
         _uiState.update {
             it.copy(settings = it.settings.copy(soundEffectsEnabled = newEnabled))
         }
     }
 
     fun startNewGame() {
+        RoundTimer.stop(getApplication())
         val currentSettings = _uiState.value.settings
         val allMovies = repository.getMoviesForLanguages(
             languages = currentSettings.selectedLanguages,
@@ -240,21 +281,23 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         // Proactively fetch posters for the upcoming deck and online catalog in background
-        viewModelScope.launch(Dispatchers.IO) {
+        if (networkEnabled) viewModelScope.launch(Dispatchers.IO) {
             movieDeck.take(5).forEach { movie ->
                 WikipediaPosterRepository.fetchPosterForMovie(movie)
             }
-            repository.fetchLimitlessOnline(MovieLanguage.ALL, forceMore = true)
+            repository.fetchLimitlessOnline(MovieLanguage.ALL)
         }
     }
 
     fun startTurn() {
+        if (_uiState.value.phase != GamePhase.READY_TURN) return
         val nextMovie = drawNextMovie()
         val duration = _uiState.value.settings.timerDurationSeconds
 
         _uiState.update {
             it.copy(
                 phase = GamePhase.ACTING,
+                roundInterrupted = false,
                 currentMovie = nextMovie,
                 isCardRevealed = false,
                 remainingSeconds = duration,
@@ -265,7 +308,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         startTimer(duration)
 
         // Pre-fetch poster for this movie and next upcoming movies immediately
-        viewModelScope.launch(Dispatchers.IO) {
+        if (networkEnabled) viewModelScope.launch(Dispatchers.IO) {
             WikipediaPosterRepository.fetchPosterForMovie(nextMovie)
             movieDeck.take(3).forEach { movie ->
                 WikipediaPosterRepository.fetchPosterForMovie(movie)
@@ -274,21 +317,19 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun toggleCardReveal() {
+        if (_uiState.value.phase != GamePhase.ACTING) return
         _uiState.update { it.copy(isCardRevealed = !it.isCardRevealed) }
     }
 
     fun togglePauseTimer() {
-        val isCurrentlyPaused = _uiState.value.isTimerPaused
-        if (isCurrentlyPaused) {
-            _uiState.update { it.copy(isTimerPaused = false, isTimerRunning = true) }
-            startTimer(_uiState.value.remainingSeconds)
-        } else {
-            _uiState.update { it.copy(isTimerPaused = true, isTimerRunning = false) }
-            timerJob?.cancel()
-        }
+        soundEffects.playUiTap()
+        if (_uiState.value.phase != GamePhase.ACTING) return
+        RoundTimer.toggle(getApplication())
     }
 
     fun skipCurrentMovie() {
+        if (!canAct()) return
+        soundEffects.playUiTap()
         val nextMovie = drawNextMovie()
         _uiState.update {
             it.copy(
@@ -296,7 +337,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 isCardRevealed = true
             )
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        if (networkEnabled) viewModelScope.launch(Dispatchers.IO) {
             WikipediaPosterRepository.fetchPosterForMovie(nextMovie)
             movieDeck.take(2).forEach { movie ->
                 WikipediaPosterRepository.fetchPosterForMovie(movie)
@@ -305,6 +346,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onGuessCorrect() {
+        if (!canAct()) return
+        RoundTimer.stop(getApplication())
         timerJob?.cancel()
         soundEffects.playCorrectDing()
         vibrate(100)
@@ -351,6 +394,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onGuessWrongOrPass() {
+        if (!canAct()) return
+        RoundTimer.stop(getApplication())
         timerJob?.cancel()
         soundEffects.playWrongBuzz()
         vibrate(200)
@@ -391,7 +436,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun onTimeUp() {
-        soundEffects.playTimeUpAlarm()
+        if (_uiState.value.phase != GamePhase.ACTING) return
         vibrate(600)
 
         val currentState = _uiState.value
@@ -430,6 +475,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun proceedToNextTurn() {
+        if (_uiState.value.phase != GamePhase.ROUND_SUMMARY) return
         val nextTeamId = if (_uiState.value.activeTeamId == 1) 2 else 1
         val nextRound = if (nextTeamId == 1) _uiState.value.currentRoundNumber + 1 else _uiState.value.currentRoundNumber
 
@@ -447,6 +493,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun concludeGame() {
+        RoundTimer.stop(getApplication())
         timerJob?.cancel()
         soundEffects.playWinnerFanfare()
         vibrate(300)
@@ -460,6 +507,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun returnToSetup() {
+        RoundTimer.stop(getApplication())
         timerJob?.cancel()
         _uiState.update {
             it.copy(
@@ -470,33 +518,34 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun canAct(): Boolean {
+        if (_uiState.value.phase != GamePhase.ACTING || _uiState.value.isTimerPaused) return false
+        return RoundTimer.tick().let { it.running && !it.expired }
+    }
+
     private fun startTimer(durationSeconds: Int) {
+        RoundTimer.start(getApplication(), durationSeconds, _uiState.value.settings.soundEffectsEnabled,
+            _uiState.value.appLanguage == AppLanguage.NEPALI)
+        monitorTimer()
+    }
+
+    private fun monitorTimer() {
+        // Fallback also keeps visible gameplay correct if the OS rejects service startup.
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            var currentSec = durationSeconds
-            while (currentSec > 0) {
-                delay(1000)
-                currentSec -= 1
-                _uiState.update { it.copy(remainingSeconds = currentSec) }
-
-                if (currentSec in 1..10) {
-                    soundEffects.playTick(pitchMultiplier = 1.0f + (10 - currentSec) * 0.1f)
-                    vibrate(40)
-                }
-            }
-            onTimeUp()
+            while (_uiState.value.phase == GamePhase.ACTING) { RoundTimer.tick(); delay(100) }
         }
     }
 
     private fun drawNextMovie(): Movie {
-        if (movieDeck.size < 8) {
+        if (networkEnabled && movieDeck.size < 8) {
             viewModelScope.launch(Dispatchers.IO) {
-                repository.fetchLimitlessOnline(_uiState.value.settings.selectedLanguage, forceMore = true)
+                repository.fetchLimitlessOnline(_uiState.value.settings.selectedLanguage)
             }
         }
 
         if (movieDeck.isEmpty()) {
-            val all = repository.getAllMovies(_uiState.value.settings.selectedLanguage)
+            val all = repository.getMoviesForLanguages(_uiState.value.settings.selectedLanguages, _uiState.value.settings.selectedDifficulty)
             movieDeck.addAll(all.shuffled())
         }
 
@@ -557,5 +606,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         timerJob?.cancel()
+        soundEffects.close()
     }
 }
+

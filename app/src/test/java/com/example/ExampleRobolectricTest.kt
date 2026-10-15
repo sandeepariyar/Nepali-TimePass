@@ -37,15 +37,16 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `nepali gang names contain 34 pairs and randomizer works`() {
-    assertEquals(34, NepaliGangNames.PAIRS.size)
+  fun `nepali gang names contain 32 pairs and randomizer works`() {
+    assertEquals(32, NepaliGangNames.PAIRS.size)
     val randomPair = NepaliGangNames.getRandomPair()
     assertNotNull(randomPair)
-    assertTrue(randomPair.team1Name.isNotEmpty())
-    assertTrue(randomPair.team2Name.isNotEmpty())
+    assertTrue(randomPair.team1Nepali.isNotEmpty())
+    assertTrue(randomPair.team2Nepali.isNotEmpty())
 
     val randomSingle = NepaliGangNames.getRandomSingleGang()
     assertNotNull(randomSingle)
-    assertTrue(randomSingle.name.isNotEmpty())
+    assertTrue(randomSingle.nepaliName.isNotEmpty())
   }
 }
+

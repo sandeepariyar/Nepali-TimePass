@@ -1,6 +1,15 @@
 package com.example
 
 import android.os.Bundle
+import android.os.Build
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
+import androidx.activity.compose.BackHandler
+import androidx.core.content.ContextCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -41,6 +50,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Setup Coil ImageLoader with valid User-Agent for Wikipedia/Wikimedia images
+        if (!imageLoaderConfigured) {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
@@ -52,11 +62,11 @@ class MainActivity : ComponentActivity() {
             }
             .build()
 
-        val imageLoader = ImageLoader.Builder(this)
+        val imageLoader = ImageLoader.Builder(applicationContext)
             .okHttpClient(okHttpClient)
             .memoryCache {
-                MemoryCache.Builder(this)
-                    .maxSizePercent(0.25)
+                MemoryCache.Builder(applicationContext)
+                    .maxSizePercent(0.15)
                     .build()
             }
             .diskCache {
@@ -69,6 +79,8 @@ class MainActivity : ComponentActivity() {
             .build()
 
         Coil.setImageLoader(imageLoader)
+        imageLoaderConfigured = true
+        }
 
         setContent {
             MyApplicationTheme {
@@ -83,6 +95,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    companion object { private var imageLoaderConfigured = false }
 }
 
 @Composable
@@ -91,6 +104,21 @@ fun GameAppContent(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val permissionPreferences = remember { context.getSharedPreferences("notification_prompt", 0) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        viewModel.startTurn()
+    }
+    val startRound: () -> Unit = {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && !permissionPreferences.getBoolean("asked", false)) {
+            permissionPreferences.edit().putBoolean("asked", true).apply()
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else viewModel.startTurn()
+    }
+    BackHandler(enabled = uiState.phase == GamePhase.ACTING) {
+        if (uiState.isTimerRunning) viewModel.togglePauseTimer()
+    }
 
     AnimatedContent(
         targetState = uiState.phase,
@@ -134,7 +162,7 @@ fun GameAppContent(
             GamePhase.READY_TURN -> {
                 ReadyTurnScreen(
                     uiState = uiState,
-                    onStartTurn = viewModel::startTurn,
+                    onStartTurn = startRound,
                     onConcludeGame = viewModel::concludeGame,
                     onBackToSetup = viewModel::returnToSetup
                 )
@@ -148,6 +176,7 @@ fun GameAppContent(
                     onGuessCorrect = viewModel::onGuessCorrect,
                     onGuessWrongOrPass = viewModel::onGuessWrongOrPass,
                     onSkipMovie = viewModel::skipCurrentMovie,
+                    onToggleSound = viewModel::toggleSoundEffects,
                     onConcludeGame = viewModel::concludeGame
                 )
             }
@@ -170,3 +199,4 @@ fun GameAppContent(
         }
     }
 }
+

@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -59,6 +60,12 @@ fun MoviePosterBadge(
         }
     }
 
+    val context = LocalContext.current
+    val imageRequest = remember(posterUrl, context) {
+        ImageRequest.Builder(context).data(posterUrl)
+            .addHeader("User-Agent", "MovieCharadesApp/1.0 (Android; charades_game@gmail.com) Mozilla/5.0")
+            .crossfade(200).build()
+    }
     val shape = RoundedCornerShape(cornerRadius)
 
     Box(
@@ -71,11 +78,7 @@ fun MoviePosterBadge(
     ) {
         if (!posterUrl.isNullOrEmpty()) {
             SubcomposeAsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(posterUrl)
-                    .addHeader("User-Agent", "MovieCharadesApp/1.0 (Android; charades_game@gmail.com) Mozilla/5.0")
-                    .crossfade(200)
-                    .build(),
+                model = imageRequest,
                 contentDescription = "${movie.title} Poster",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -183,3 +186,4 @@ private fun StylizedFallbackPoster(
         }
     }
 }
+

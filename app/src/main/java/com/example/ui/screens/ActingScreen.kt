@@ -1,364 +1,116 @@
 package com.example.ui.screens
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import com.example.model.AppLanguage
-import com.example.ui.components.MovieCard
-import com.example.ui.theme.ModernAmber
-import com.example.ui.theme.ModernBg
-import com.example.ui.theme.ModernCard
-import com.example.ui.theme.ModernCrimson
-import com.example.ui.theme.ModernEmerald
-import com.example.ui.theme.ModernIndigo
-import com.example.ui.theme.ModernSurface
-import com.example.ui.theme.TextMuted
-import com.example.ui.theme.TextSecondary
+import com.example.ui.components.*
+import com.example.ui.theme.*
 import com.example.viewmodel.GameUiState
+import java.util.Locale
 
 @Composable
-fun ActingScreen(
-    uiState: GameUiState,
-    onToggleReveal: () -> Unit,
-    onTogglePauseTimer: () -> Unit,
-    onGuessCorrect: () -> Unit,
-    onGuessWrongOrPass: () -> Unit,
-    onSkipMovie: () -> Unit,
-    onConcludeGame: () -> Unit
-) {
-    val isNepali = uiState.appLanguage == AppLanguage.NEPALI
-    val activeTeamId = uiState.activeTeamId
-    val team1Color = Color(uiState.team1.colorHex)
-    val team2Color = Color(uiState.team2.colorHex)
-
-    val minutes = uiState.remainingSeconds / 60
-    val seconds = uiState.remainingSeconds % 60
-    val timeFormatted = String.format("%02d:%02d", minutes, seconds)
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(ModernBg)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // TOP SECTION: BATTLE SCOREBOARD & CENTER TIMER CAPSULE
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Team 1 Card
-                val isTeam1Active = activeTeamId == 1
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(90.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 6.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isTeam1Active) team1Color.copy(alpha = 0.25f) else ModernSurface
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = uiState.team1.name,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isTeam1Active) team1Color else TextSecondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "${uiState.team1.score}",
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                        }
-                    }
-
-                    // ACTIVE floating top pill
-                    if (isTeam1Active) {
-                        Surface(
-                            shape = RoundedCornerShape(50),
-                            color = ModernAmber,
-                            modifier = Modifier.align(Alignment.TopCenter)
-                        ) {
-                            Text(
-                                text = if (isNepali) "सक्रिय" else "ACTIVE",
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.Black,
-                                letterSpacing = 1.sp,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
+fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePauseTimer: () -> Unit,
+    onGuessCorrect: () -> Unit, onGuessWrongOrPass: () -> Unit, onSkipMovie: () -> Unit,
+    onConcludeGame: () -> Unit, onToggleSound: () -> Unit = {}) {
+    val ne = uiState.appLanguage == AppLanguage.NEPALI
+    var confirmEnd by rememberSaveable { mutableStateOf(false) }
+    if (confirmEnd) AlertDialog(onDismissRequest = { confirmEnd = false },
+        title = { Text(if (ne) "खेल समाप्त गर्ने?" else "Finish this match?") },
+        text = { Text(if (ne) "समय चलिरहन्छ। समाप्त गरेपछि विजेता देखिनेछ।" else "The timer keeps running. Finishing takes you to the winners.") },
+        confirmButton = { TextButton(onClick = { confirmEnd = false; onConcludeGame() }) { Text(if (ne) "समाप्त" else "Finish") } },
+        dismissButton = { TextButton(onClick = { confirmEnd = false }) { Text(if (ne) "खेल जारी" else "Keep playing") } })
+    CinemaBackdrop {
+        BoxWithConstraints(Modifier.fillMaxSize().padding(16.dp)) {
+            val wide = maxWidth > maxHeight
+            val showPoster = maxHeight > 720.dp
+            val needsScroll = !wide && (maxHeight < 480.dp || LocalDensity.current.fontScale > 1.5f)
+            val bodyModifier = if (needsScroll) Modifier.fillMaxSize().verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()
+            Column(bodyModifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(if (ne) "राउन्ड ${uiState.currentRoundNumber} • अभिनय" else "ROUND ${uiState.currentRoundNumber} • ON STAGE", color = ModernAmber, style = MaterialTheme.typography.labelLarge)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("${uiState.team1.name}  ${uiState.team1.score}", Modifier.weight(1f), color = TextPrimary, maxLines = 2)
+                    Text("${uiState.team2.score}  ${uiState.team2.name}", Modifier.weight(1f), textAlign = TextAlign.End, color = TextPrimary, maxLines = 2)
                 }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                // Center Timer Capsule
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = ModernSurface,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .clickable { onTogglePauseTimer() }
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Timer,
-                            contentDescription = "Timer",
-                            tint = if (uiState.remainingSeconds <= 15) ModernCrimson else ModernIndigo,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = timeFormatted,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Black,
-                            color = if (uiState.remainingSeconds <= 15) ModernCrimson else Color.White,
-                            letterSpacing = (-0.5).sp
-                        )
+                if (wide) Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Countdown(uiState, ne)
+                        ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
                     }
+                    Box(Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, false) }
+                } else {
+                    Countdown(uiState, ne)
+                    Box(if (needsScroll) Modifier.fillMaxWidth().heightIn(min = 120.dp) else Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, showPoster) }
+                    ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
                 }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                // Team 2 Card
-                val isTeam2Active = activeTeamId == 2
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(90.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 6.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isTeam2Active) team2Color.copy(alpha = 0.25f) else ModernSurface
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = uiState.team2.name,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isTeam2Active) team2Color else TextSecondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "${uiState.team2.score}",
-                                fontSize = 26.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                        }
-                    }
-
-                    // ACTIVE floating top pill
-                    if (isTeam2Active) {
-                        Surface(
-                            shape = RoundedCornerShape(50),
-                            color = ModernAmber,
-                            modifier = Modifier.align(Alignment.TopCenter)
-                        ) {
-                            Text(
-                                text = if (isNepali) "सक्रिय" else "ACTIVE",
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.Black,
-                                letterSpacing = 1.sp,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    TextButton(onClick = onToggleSound) { Text(if (uiState.settings.soundEffectsEnabled) { if (ne) "आवाज बन्द" else "Mute" } else { if (ne) "आवाज खोल्नुहोस्" else "Unmute" }, color = ModernAmber) }
+                    TextButton(onClick = { confirmEnd = true }) { Text(if (ne) "खेल समाप्त" else "Finish match", color = TextSecondary) }
                 }
+                if (uiState.backgroundTimerUnavailable) Text(if (ne) "पृष्ठभूमि टाइमर उपलब्ध छैन। एप खुला राख्नुहोस्।" else "Background timer unavailable. Keep the app open.", color = ModernAmber, style = MaterialTheme.typography.labelSmall)
+                else if (!androidx.core.app.NotificationManagerCompat.from(LocalContext.current).areNotificationsEnabled())
+                    Text(if (ne) "सूचना बन्द छ। लक स्क्रिनमा समय देखिँदैन।" else "Notifications off • Lock-screen countdown hidden", color = TextSecondary, style = MaterialTheme.typography.labelSmall)
             }
+        }
+        StageLighting(uiState.remainingSeconds, uiState.settings.timerDurationSeconds, uiState.isTimerRunning, Modifier.matchParentSize())
+    }
+}
 
-            // MIDDLE SECTION: FLAT MOVIE CARD
-            uiState.currentMovie?.let { movie ->
-                MovieCard(
-                    movie = movie,
-                    isCardRevealed = uiState.isCardRevealed,
-                    onToggleReveal = onToggleReveal,
-                    onSkip = onSkipMovie,
-                    appLanguage = uiState.appLanguage,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(vertical = 12.dp)
-                )
-            }
+@Composable
+private fun Countdown(state: GameUiState, ne: Boolean) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(String.format(Locale.ROOT, "%02d:%02d", state.remainingSeconds / 60, state.remainingSeconds % 60),
+            fontSize = 44.sp, lineHeight = 52.sp, fontWeight = FontWeight.Black,
+            color = TextPrimary, modifier = Modifier.testTag("countdown"))
+        Text(if (state.isTimerPaused) { if (ne) "मध्यान्तर • समय रोकिएको छ" else "INTERMISSION • PAUSED" }
+            else if (state.remainingSeconds <= 10) { if (ne) "अन्तिम मौका!" else "THE GRAND FINALE!" }
+            else { if (ne) "नबोली अभिनय गर्नुहोस्" else "LET YOUR ACTING DO THE TALKING" },
+            color = ModernAmber, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+    }
+}
 
-            // BOTTOM CONTROLS: PASS AND CORRECT BUTTONS
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // PASS BUTTON
-                    Button(
-                        onClick = onGuessWrongOrPass,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = ModernCard,
-                            contentColor = ModernCrimson
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(64.dp)
-                            .testTag("guess_wrong_button")
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null,
-                                tint = ModernCrimson,
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = if (isNepali) "छोड्नुहोस्" else "PASS",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp,
-                                color = ModernCrimson
-                            )
-                        }
-                    }
-
-                    // CORRECT! BUTTON
-                    Button(
-                        onClick = onGuessCorrect,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = ModernEmerald,
-                            contentColor = Color.White
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-                        modifier = Modifier
-                            .weight(2f)
-                            .height(64.dp)
-                            .testTag("guess_correct_button")
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = if (isNepali) "मिलेको!" else "CORRECT!",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp,
-                                color = Color.White
-                            )
-                        }
-                    }
+@Composable
+private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit, showPoster: Boolean) {
+    CinemaPanel {
+        AnimatedContent(targetState = state.currentMovie, label = "movie_skip") { movie ->
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (state.isCardRevealed && movie != null) {
+                    if (showPoster) MoviePosterBadge(movie, width = 74.dp, height = 100.dp)
+                    Text(if (ne && movie.nativeTitle.isNotBlank()) movie.nativeTitle else movie.title,
+                        style = MaterialTheme.typography.headlineSmall, color = TextPrimary, fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center, modifier = Modifier.testTag("movie_title"))
+                    if (ne && movie.nativeTitle.isNotBlank()) Text(movie.title, color = TextSecondary, textAlign = TextAlign.Center)
+                    Text("${movie.year} • ${movie.genre}", color = TextSecondary, style = MaterialTheme.typography.labelMedium)
+                    if (movie.actors.isNotBlank()) Text(movie.actors, color = TextSecondary, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)
+                    if (movie.hint.isNotBlank()) Text(movie.hint, color = TextSecondary, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)
+                } else {
+                    Text(if (ne) "गोप्य चलचित्र" else "FOR THE ACTOR’S EYES", color = ModernAmber)
+                    Text(if (ne) "आफ्नो फिल्म हेर्नुहोस्।" else "Ready for your close-up?", color = TextPrimary, textAlign = TextAlign.Center)
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // End Game Early Link
-                Text(
-                    text = if (isNepali) "खेल समाप्त गरी नतिजा हेर्नुहोस्" else "End Match & View Winner",
-                    fontSize = 11.sp,
-                    color = TextMuted,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier
-                        .clickable { onConcludeGame() }
-                        .padding(vertical = 4.dp)
-                        .testTag("conclude_game_acting_button")
-                )
+                CinemaButton(if (state.isCardRevealed) { if (ne) "फिल्म लुकाउनुहोस्" else "Hide film" } else { if (ne) "फिल्म हेर्नुहोस्" else "Reveal film" }, onReveal,
+                    Modifier.fillMaxWidth().testTag("reveal_movie_button"), secondary = true)
             }
+        }
+    }
+}
+
+@Composable
+private fun ActingControls(state: GameUiState, ne: Boolean, correct: () -> Unit, pass: () -> Unit, skip: () -> Unit, pause: () -> Unit) {
+    val canGuess = state.isTimerRunning && state.remainingSeconds > 0
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        CinemaButton(if (ne) "मिल्यो! +१" else "CORRECT! +1", correct, Modifier.fillMaxWidth().testTag("guess_correct_button"), enabled = canGuess)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            CinemaButton(if (ne) "पास" else "Pass", pass, Modifier.weight(1f).testTag("guess_wrong_button"), secondary = true, enabled = canGuess)
+            CinemaButton(if (ne) "फिल्म फेरौँ" else "Skip film", skip, Modifier.weight(1f).testTag("skip_movie_button"), secondary = true, enabled = canGuess)
+            CinemaButton(if (state.isTimerPaused) { if (ne) "जारी" else "Resume" } else { if (ne) "रोकौँ" else "Pause" }, pause, Modifier.weight(1f).testTag("pause_timer_button"), secondary = true)
         }
     }
 }

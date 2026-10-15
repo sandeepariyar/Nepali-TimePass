@@ -5,6 +5,8 @@ import com.example.model.Movie
 import com.example.model.MovieDifficulty
 import com.example.model.MovieLanguage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import android.os.SystemClock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -94,10 +96,17 @@ object OnlineFilmDirectory {
         MovieLanguage.NEPALI to listOf("Nepali hit film", "Nepalese cinema movie", "Kollywood Nepali film")
     )
 
+    private val discoveryLock = Mutex()
+    private val lastDiscovery = mutableMapOf<MovieLanguage, Long>()
+
     suspend fun fetchLimitlessOnlineFilms(
         category: MovieLanguage = MovieLanguage.ALL,
         forceMore: Boolean = false
     ): List<Movie> = withContext(Dispatchers.IO) {
+        if (!discoveryLock.tryLock()) return@withContext _onlineMovies.value
+        try {
+            val previous = lastDiscovery[category]
+            if (!forceMore && previous != null && SystemClock.elapsedRealtime() - previous < 60_000) return@withContext _onlineMovies.value
         _isStreaming.value = true
         _streamStatus.value = "🔄 Fetching live movie stream from internet..."
 
@@ -147,7 +156,9 @@ object OnlineFilmDirectory {
         _isStreaming.value = false
         _streamStatus.value = "🟢 Internet Stream Active: ${discoveredMovies.size} online movies fetched"
         Log.d(TAG, "Online movie pool expanded to ${discoveredMovies.size} titles (+$newAddedCount fresh)")
+        lastDiscovery[category] = SystemClock.elapsedRealtime()
         return@withContext discoveredMovies.values.toList()
+        } finally { _isStreaming.value = false; discoveryLock.unlock() }
     }
 
     /**
@@ -355,3 +366,4 @@ object OnlineFilmDirectory {
         return ""
     }
 }
+
