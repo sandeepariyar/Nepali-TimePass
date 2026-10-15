@@ -1,0 +1,8 @@
+{
+  "name": "Nepali Timepass",
+  "description": "Slick & fun Dumb Charades party game for Nepali, Bollywood & South Indian blockbuster movies. Created by Sandeep Pariyar and dedicated to all Nepalis worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

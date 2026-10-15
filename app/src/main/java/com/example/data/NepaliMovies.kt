@@ -1,0 +1,91 @@
+package com.example.data
+
+import com.example.model.Movie
+import com.example.model.MovieDifficulty
+import com.example.model.MovieLanguage
+
+object NepaliMovies {
+    val list: List<Movie> = listOf(
+        // Superhit & Iconic Modern Blockbusters
+        Movie("ne_purna_bahadur", "Purna Bahadur Ko Sarangi", "पूर्ण बहादुरको सारङ्गी", 2024, MovieLanguage.NEPALI, "Emotional Family Drama", MovieDifficulty.EASY, "", "Vijay Baral, Anjana Baraili, Prakash Saput, Buddhi Tamang"),
+        Movie("ne_chhakka_panja", "Chhakka Panja", "छक्का पन्जा", 2016, MovieLanguage.NEPALI, "Comedy / Social Drama", MovieDifficulty.EASY, "", "Deepak Raj Giri, Priyanka Karki, Kedar Ghimire (Magne Budo), Jitu Nepal"),
+        Movie("ne_chhakka_panja_2", "Chhakka Panja 2", "छक्का पन्जा २", 2017, MovieLanguage.NEPALI, "Comedy / Social Drama", MovieDifficulty.EASY, "", "Deepak Raj Giri, Kedar Ghimire, Swastima Khadka, Barsha Raut"),
+        Movie("ne_chhakka_panja_3", "Chhakka Panja 3", "छक्का पन्जा ३", 2018, MovieLanguage.NEPALI, "Social Comedy Drama", MovieDifficulty.EASY, "", "Deepak Raj Giri, Deepika Prasai, Kedar Ghimire, Jitu Nepal"),
+        Movie("ne_chhakka_panja_4", "Chhakka Panja 4", "छक्का पन्जा ४", 2023, MovieLanguage.NEPALI, "Political Comedy Drama", MovieDifficulty.EASY, "", "Deepak Raj Giri, Deepa Shree Niraula, Kedar Ghimire, Benisha Hamal"),
+        Movie("ne_chhakka_panja_5", "Chhakka Panja 5", "छक्का पन्जा ५", 2024, MovieLanguage.NEPALI, "Social Comedy Drama", MovieDifficulty.EASY, "", "Deepak Raj Giri, Kedar Ghimire, Barsha Siwakoti"),
+        Movie("ne_kabaddi", "Kabaddi", "कबड्डी", 2014, MovieLanguage.NEPALI, "Romantic Comedy", MovieDifficulty.EASY, "", "Dayahang Rai (Kazi), Rishma Gurung (Maiya), Nischal Basnet"),
+        Movie("ne_kabaddi_kabaddi", "Kabaddi Kabaddi", "कबड्डी कबड्डी", 2015, MovieLanguage.NEPALI, "Romantic Comedy", MovieDifficulty.EASY, "", "Dayahang Rai, Rishma Gurung, Saugat Malla"),
+        Movie("ne_kabaddi_3", "Kabaddi Kabaddi Kabaddi", "कबड्डी ३", 2019, MovieLanguage.NEPALI, "Romantic Comedy", MovieDifficulty.EASY, "", "Dayahang Rai, Upasana Singh Thakuri, Karma, Wilson Bikram Rai"),
+        Movie("ne_kabaddi_4", "Kabaddi 4: The Final Match", "कबड्डी ४", 2022, MovieLanguage.NEPALI, "Romantic Comedy Drama", MovieDifficulty.EASY, "", "Dayahang Rai, Miruna Magar, Saugat Malla, Buddhi Tamang"),
+        Movie("ne_loot", "Loot", "लूट", 2012, MovieLanguage.NEPALI, "Crime / Heist Thriller", MovieDifficulty.EASY, "", "Saugat Malla (Haku Kale), Dayahang Rai, Karma, Prateek Raj Neupane"),
+        Movie("ne_loot_2", "Loot 2", "लूट २", 2017, MovieLanguage.NEPALI, "Crime / Thriller", MovieDifficulty.EASY, "", "Saugat Malla, Dayahang Rai, Karma, Bipin Karki"),
+        Movie("ne_jaari", "Jaari", "जारी", 2023, MovieLanguage.NEPALI, "Limbu Cultural Romance", MovieDifficulty.EASY, "", "Dayahang Rai, Miruna Magar, Roy Deep Shrestha, Prem Subba"),
+        Movie("ne_mahapurush", "Mahapurush", "महापुरुष", 2022, MovieLanguage.NEPALI, "Heartwarming Family Drama", MovieDifficulty.EASY, "", "Hari Bansha Acharya, Madan Krishna Shrestha, Gauri Malla, Rabindra Singh Baniya"),
+        Movie("ne_pashupati_prasad", "Pashupati Prasad", "पशुपति प्रसाद", 2016, MovieLanguage.NEPALI, "Social Tragedy / Drama", MovieDifficulty.EASY, "", "Khagendra Lamichhane, Bipin Karki (Bhasme Don), Barsha Siwakoti"),
+        Movie("ne_bhasme_don", "Pashupati Prasad 2: Bhasme Don", "भस्मे डन", 2023, MovieLanguage.NEPALI, "Crime Drama", MovieDifficulty.EASY, "", "Bipin Karki, Saugat Malla, Swastima Khadka, Prakash Ghimire"),
+        Movie("ne_jatra", "Jatra", "जात्रा", 2016, MovieLanguage.NEPALI, "Heist Comedy", MovieDifficulty.EASY, "", "Bipin Karki, Rabindra Singh Baniya, Rabindra Jha, Barsha Raut"),
+        Movie("ne_jatrai_jatra", "Jatrai Jatra", "जात्रै जात्रा", 2019, MovieLanguage.NEPALI, "Heist Comedy Drama", MovieDifficulty.EASY, "", "Bipin Karki, Dayahang Rai, Rabindra Singh Baniya, Rabindra Jha"),
+        Movie("ne_mahajatra", "Mahajatra", "महाजात्रा", 2024, MovieLanguage.NEPALI, "Crime Comedy Drama", MovieDifficulty.EASY, "", "Bipin Karki, Dayahang Rai, Rabindra Singh Baniya, Haribansha Acharya"),
+        Movie("ne_dimag_kharab", "Dimag Kharab", "दिमाग खराब", 2023, MovieLanguage.NEPALI, "Political Drama Thriller", MovieDifficulty.EASY, "", "Khagendra Lamichhane, Dayahang Rai, Swastima Khadka, Arpan Thapa"),
+        Movie("ne_boksi_ko_ghar", "Boksi Ko Ghar", "बोक्सीको घर", 2024, MovieLanguage.NEPALI, "Social Mystery Drama", MovieDifficulty.EASY, "", "Keki Adhikari, Shupala Sapkota, Swechha Raut"),
+        Movie("ne_gharjwai", "Gharjwai", "घरज्वाइँ", 2024, MovieLanguage.NEPALI, "Cultural Romance Comedy", MovieDifficulty.EASY, "", "Dayahang Rai, Miruna Magar, Buddhi Tamang, Shishir Bangdel"),
+        Movie("ne_mansara", "Mansara", "मनसरा", 2024, MovieLanguage.NEPALI, "Emotional Romantic Drama", MovieDifficulty.EASY, "", "Dayahang Rai, Miruna Magar, Praveen Khatiwada, Menuka Pradhan"),
+        Movie("ne_gaun_aayeko_baato", "Gaun Aayeko Baato", "गाउँ आएको बाटो", 2024, MovieLanguage.NEPALI, "Father-Son Village Drama", MovieDifficulty.MEDIUM, "", "Dayahang Rai, Pashupati Rai, Prasanna Shrestha"),
+        Movie("ne_tel_visa", "Tel Visa", "तेल भिसा", 2024, MovieLanguage.NEPALI, "Family Drama", MovieDifficulty.EASY, "", "Bipin Karki, Barsha Raut, Pooja Chand, Richa Ghimire"),
+        Movie("ne_fulbari", "Fulbari", "फूलबारी", 2023, MovieLanguage.NEPALI, "Emotional Family Drama", MovieDifficulty.EASY, "", "Bipin Karki, Dayahang Rai, Aruna Karki, Priyanka Karki"),
+        Movie("ne_dui_numbari", "Dui Numbari", "दुई नम्बरी", 2022, MovieLanguage.NEPALI, "Buddy Comedy", MovieDifficulty.EASY, "", "Dayahang Rai, Saugat Malla, Upasana Singh Thakuri"),
+
+        // Legendary All-Time Nepali Classics
+        Movie("ne_darpan_chhaya", "Darpan Chhaya", "दर्पण छायाँ", 2001, MovieLanguage.NEPALI, "Musical Romantic Tragedy", MovieDifficulty.EASY, "", "Dilip Rayamajhi, Niruta Singh, Uttam Pradhan"),
+        Movie("ne_kusume_rumal", "Kusume Rumal", "कुसुमे रुमाल", 1985, MovieLanguage.NEPALI, "Romantic Musical Classic", MovieDifficulty.EASY, "", "Bhuwan K.C., Tripti Nadakar, Udit Narayan"),
+        Movie("ne_lahure", "Lahure", "लाहुरे", 1989, MovieLanguage.NEPALI, "Patriotic Musical Drama", MovieDifficulty.MEDIUM, "", "Shrawan Ghimire, Tripti Nadakar, Tulsi Ghimire"),
+        Movie("ne_saino", "Saino", "साइनो", 1988, MovieLanguage.NEPALI, "Musical Drama", MovieDifficulty.MEDIUM, "", "Danny Denzongpa, Tripti Nadakar, Bhuwan K.C."),
+        Movie("ne_balidan", "Balidan", "बलिदान", 1997, MovieLanguage.NEPALI, "Revolutionary Drama", MovieDifficulty.MEDIUM, "", "Hari Bansha Acharya, Madan Krishna Shrestha, Mithila Sharma"),
+        Movie("ne_kanyadan", "Kanyadan", "कन्यादान", 1991, MovieLanguage.NEPALI, "Social Family Drama", MovieDifficulty.EASY, "", "Bhuwan K.C., Gauri Malla, Subhadra Adhikari"),
+        Movie("ne_deuta", "Deuta", "देउता", 1991, MovieLanguage.NEPALI, "Action Romance", MovieDifficulty.EASY, "", "Rajesh Hamal, Shrawan Ghimire, Tulsi Ghimire"),
+        Movie("ne_chino", "Chino", "चिनो", 1991, MovieLanguage.NEPALI, "Blockbuster Action Drama", MovieDifficulty.EASY, "", "Shiva Shrestha, Bhuwan KC, Sunil Thapa, Kristi Mainali"),
+        Movie("ne_maitighar", "Maitighar", "माइतीघर", 1966, MovieLanguage.NEPALI, "First Private Film", MovieDifficulty.HARD, "", "Mala Sinha, C.P. Lohani, Sunil Dutt"),
+        Movie("ne_basanti", "Basanti", "बशन्ती", 2000, MovieLanguage.NEPALI, "Historical Romantic Drama", MovieDifficulty.EASY, "", "Karishma Manandhar, Rajesh Hamal, Niruta Singh, Gauri Malla"),
+        Movie("ne_hami_teen_bhai", "Hami Teen Bhai", "हामी तीन भाइ", 2004, MovieLanguage.NEPALI, "Family Action Classic", MovieDifficulty.EASY, "", "Rajesh Hamal, Shree Krishna Shrestha, Nikhil Upreti, Jharana Thapa"),
+        Movie("ne_a_mero_hajur", "A Mero Hajur", "ए मेरो हजुर", 2002, MovieLanguage.NEPALI, "Musical Romance", MovieDifficulty.EASY, "", "Shree Krishna Shrestha, Jharana Thapa"),
+        Movie("ne_kohinoor", "Kohinoor", "कोहिनूर", 2014, MovieLanguage.NEPALI, "Action Romance Drama", MovieDifficulty.EASY, "", "Shree Krishna Shrestha, Sweta Khadka, Mithila Sharma"),
+        Movie("ne_allare", "Allare", "अल्लारे", 1997, MovieLanguage.NEPALI, "Iconic Comedy", MovieDifficulty.EASY, "", "Rajesh Hamal, Karishma Manandhar, Ashok Sharma"),
+        Movie("ne_truck_driver", "Truck Driver", "ट्रक ड्राइभर", 1994, MovieLanguage.NEPALI, "Action Hit", MovieDifficulty.EASY, "", "Shiva Shrestha, Karishma Manandhar, Bijay Mohanty"),
+        Movie("ne_simana", "Simana", "सीमाना", 1996, MovieLanguage.NEPALI, "Patriotic Action", MovieDifficulty.EASY, "", "Rajesh Hamal, Dhiren Shakya, Saroj Khanal"),
+        Movie("ne_karodpati", "Karodpati", "करोडपति", 1997, MovieLanguage.NEPALI, "Comedy Action", MovieDifficulty.EASY, "", "Bhuwan KC, Sushmita KC, Ramesh Upreti"),
+        Movie("ne_afnopan", "Afnopan", "आफ्नोपन", 2001, MovieLanguage.NEPALI, "Emotional Drama", MovieDifficulty.MEDIUM, "", "Rajesh Hamal, Shree Krishna Shrestha, Bipana Thapa"),
+        Movie("ne_yo_maya_ko_sagar", "Yo Maya Ko Sagar", "यो मायाको सागर", 2001, MovieLanguage.NEPALI, "Musical Romance", MovieDifficulty.MEDIUM, "", "Ramesh Upreti, Jal Shah, Rajesh Hamal"),
+        Movie("ne_dakshina", "Dakshina", "दक्षिणा", 1994, MovieLanguage.NEPALI, "Action Drama", MovieDifficulty.MEDIUM, "", "Bhuwan KC, Niruta Singh, Tulsi Ghimire"),
+        Movie("ne_santaan", "Santaan", "सन्तान", 1989, MovieLanguage.NEPALI, "Family Classic", MovieDifficulty.MEDIUM, "", "Bhuwan KC, Kristi Mainali, Arjun Jung Shahi"),
+
+        // Modern Romance & Youth Hits
+        Movie("ne_prem_geet", "Prem Geet", "प्रेम गीत", 2016, MovieLanguage.NEPALI, "Musical Romance", MovieDifficulty.EASY, "", "Pradeep Khadka, Pooja Sharma, Saroj Khanal"),
+        Movie("ne_prem_geet_2", "Prem Geet 2", "प्रेम गीत २", 2017, MovieLanguage.NEPALI, "Musical Romance", MovieDifficulty.EASY, "", "Pradeep Khadka, Aaslesha Thakuri, Bhuwan KC"),
+        Movie("ne_prem_geet_3", "Prem Geet 3", "प्रेम गीत ३", 2022, MovieLanguage.NEPALI, "Epic Period Romance", MovieDifficulty.EASY, "", "Pradeep Khadka, Kristina Gurung, Shiva Shrestha"),
+        Movie("ne_prakash", "Prakash", "प्रकाश", 2022, MovieLanguage.NEPALI, "Jumla Social Drama", MovieDifficulty.MEDIUM, "", "Pradeep Khadka, Deeya Maskey, Renu Yogi"),
+        Movie("ne_hostel", "Hostel", "होस्टेल", 2013, MovieLanguage.NEPALI, "Youth Drama", MovieDifficulty.EASY, "", "Anmol K.C., Salon Basnet, Gaurav Pahari, Prakriti Shrestha"),
+        Movie("ne_jerryy", "Jerryy", "जेरी", 2014, MovieLanguage.NEPALI, "Romantic Drama", MovieDifficulty.EASY, "", "Anmol K.C., Anna Sharma, Amalia Sharma"),
+        Movie("ne_dreams", "Dreams", "ड्रिम्स", 2016, MovieLanguage.NEPALI, "Romance", MovieDifficulty.EASY, "", "Anmol K.C., Samragyee RL Shah, Sandhya KC"),
+        Movie("ne_gajalu", "Gajalu", "गाजलु", 2016, MovieLanguage.NEPALI, "Kumari Romance Drama", MovieDifficulty.EASY, "", "Anmol K.C., Shristi Shrestha, Salon Basnet"),
+        Movie("ne_captain", "Captain", "क्याप्टेन", 2019, MovieLanguage.NEPALI, "Sports Football Drama", MovieDifficulty.EASY, "", "Anmol K.C., Upasana Singh Thakuri, Priyanka Karki"),
+        Movie("ne_a_mero_hajur_2", "A Mero Hajur 2", "ए मेरो हजुर २", 2017, MovieLanguage.NEPALI, "Musical Romance", MovieDifficulty.EASY, "", "Samragyee RL Shah, Salin Man Bania, Salon Basnet"),
+        Movie("ne_a_mero_hajur_3", "A Mero Hajur 3", "ए मेरो हजुर ३", 2019, MovieLanguage.NEPALI, "Popstar Romance", MovieDifficulty.EASY, "", "Anmol K.C., Suhana Thapa, Salon Basnet"),
+        Movie("ne_a_mero_hajur_4", "A Mero Hajur 4", "ए मेरो हजुर ४", 2022, MovieLanguage.NEPALI, "Romance Drama", MovieDifficulty.EASY, "", "Anmol K.C., Suhana Thapa, Salon Basnet"),
+        Movie("ne_nai_nabhannu_la", "Nai Nabhannu La", "नाईं नभन्नू ल", 2010, MovieLanguage.NEPALI, "Emotional Musical", MovieDifficulty.EASY, "", "Jiwan Luitel, Richa Singh Thakuri, Anubhav Regmi"),
+        Movie("ne_nai_nabhannu_la_2", "Nai Nabhannu La 2", "नाईं नभन्नू ल २", 2014, MovieLanguage.NEPALI, "Musical Drama", MovieDifficulty.EASY, "", "Anubhav Regmi, Sugam Pokharel, Priyanka Karki"),
+        Movie("ne_nai_nabhannu_la_4", "Nai Nabhannu La 4", "नाईं नभन्नू ल ४", 2016, MovieLanguage.NEPALI, "Romance", MovieDifficulty.EASY, "", "Paul Shah, Aanchal Sharma, Barsha Raut"),
+        Movie("ne_shatru_gate", "Shatru Gate", "शत्रु गते", 2018, MovieLanguage.NEPALI, "Wedding Comedy", MovieDifficulty.EASY, "", "Hari Bansha Acharya, Madan Krishna Shrestha, Paul Shah, Aanchal Sharma"),
+        Movie("ne_dal_bhat_tarkari", "Dal Bhat Tarkari", "दाल भात तरकारी", 2019, MovieLanguage.NEPALI, "Comedy", MovieDifficulty.EASY, "", "Hari Bansha Acharya, Niruta Singh, Pushpal Khadka"),
+        Movie("ne_sano_sansar", "Sano Sansar", "सानो संसार", 2008, MovieLanguage.NEPALI, "Urban Youth Romance", MovieDifficulty.EASY, "", "Namrata Shrestha, Karma, Jiwan Luitel, Vinay Shrestha"),
+        Movie("ne_mero_euta_saathi_chha", "Mero Euta Saathi Chha", "मेरो एउटा साथी छ", 2009, MovieLanguage.NEPALI, "Romantic Musical", MovieDifficulty.EASY, "", "Aaryan Sigdel, Namrata Shrestha, Jiwan Luitel"),
+        Movie("ne_kagbeni", "Kagbeni", "कागबेनी", 2008, MovieLanguage.NEPALI, "Mystery Horror", MovieDifficulty.MEDIUM, "", "Saugat Malla, Deeya Maskey, Nima Rumba"),
+        Movie("ne_kalo_pothi", "Kalo Pothi (The Black Hen)", "कालो पोथी", 2015, MovieLanguage.NEPALI, "Village Drama", MovieDifficulty.HARD, "", "Khadka Raj Nepali, Sukra Raj Rokaya"),
+        Movie("ne_seto_surya", "White Sun (Seto Surya)", "सेतो सूर्य", 2016, MovieLanguage.NEPALI, "Social Drama", MovieDifficulty.HARD, "", "Dayahang Rai, Asha Maya Magrati"),
+        Movie("ne_bulbul", "Bulbul", "बुलबुल", 2019, MovieLanguage.NEPALI, "Tempo Driver Drama", MovieDifficulty.MEDIUM, "", "Swastima Khadka, Mukun Bhusal, Laxmi Bardewa"),
+        Movie("ne_prasad", "Prasad", "प्रसाद", 2018, MovieLanguage.NEPALI, "Social Drama", MovieDifficulty.MEDIUM, "", "Bipin Karki, Namrata Shrestha, Nischal Basnet"),
+        Movie("ne_ghampani", "Ghampani", "घामपानी", 2017, MovieLanguage.NEPALI, "Social Drama", MovieDifficulty.MEDIUM, "", "Dayahang Rai, Keki Adhikari, Ankeet Khadka"),
+        Movie("ne_bir_bikram", "Bir Bikram", "बीर विक्रम", 2016, MovieLanguage.NEPALI, "Buddy Drama", MovieDifficulty.EASY, "", "Dayahang Rai, Anoop Bikram Shahi, Deeya Pun"),
+        Movie("ne_chapali_height", "Chapali Height", "चपली हाइट", 2012, MovieLanguage.NEPALI, "Psychological Thriller", MovieDifficulty.MEDIUM, "", "Binita Baral, Amir Gautam, Raj Ghimire")
+    )
+}
+
