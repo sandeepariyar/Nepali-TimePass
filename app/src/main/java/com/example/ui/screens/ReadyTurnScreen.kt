@@ -22,6 +22,7 @@ fun ReadyTurnScreen(uiState: GameUiState, onStartTurn: () -> Unit, onConcludeGam
             GangScore(uiState.team1, Modifier.weight(1f), uiState.activeTeamId == 1)
             GangScore(uiState.team2, Modifier.weight(1f), uiState.activeTeamId == 2)
         }
+        if (uiState.roundInterrupted) Text(if (ne) "फोन फेरि सुरु भएकाले अधुरो पालो पुनः खेल्नुहोस्।" else "The device restarted. Replay the interrupted turn.", color = ModernAmber)
         CinemaPanel {
             Text(if (ne) "फोन कलाकारलाई दिनुहोस्" else "Pass the phone to the actor", color = ModernAmber)
             Text(if (ne) "फिल्म गोप्य राख्नुहोस्। नबोली अभिनय गर्नुहोस्। ${uiState.settings.timerDurationSeconds} सेकेन्डमा अनुमान मिलाउनुहोस्।" else

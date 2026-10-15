@@ -1,0 +1,29 @@
+name: Android validation
+on:
+  pull_request:
+  push:
+    branches: [feature/nepali-cinematic-ui]
+permissions:
+  contents: read
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+      - run: sdkmanager 'platforms;android-36.1' 'build-tools;36.0.0'
+      - run: gradle :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --console=plain
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nepali-timepass-debug-and-reports
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/reports/

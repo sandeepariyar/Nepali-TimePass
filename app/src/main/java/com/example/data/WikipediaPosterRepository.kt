@@ -3,6 +3,9 @@ package com.example.data
 import android.util.Log
 import com.example.model.Movie
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import android.os.SystemClock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -128,7 +131,18 @@ object WikipediaPosterRepository {
         }
     }
 
-    suspend fun fetchPosterForMovie(movie: Movie): String? = withContext(Dispatchers.IO) {
+    private val requestLocks = ConcurrentHashMap<String, Mutex>()
+    private val recentMisses = ConcurrentHashMap<String, Long>()
+
+    suspend fun fetchPosterForMovie(movie: Movie): String? =
+        requestLocks.getOrPut(movie.id) { Mutex() }.withLock {
+            cache[movie.id]?.takeIf { it.startsWith("http") }?.let { return@withLock it }
+            val missed = recentMisses[movie.id]
+            if (missed != null && SystemClock.elapsedRealtime() - missed < 600_000) return@withLock null
+            fetchPosterUncached(movie).also { if (it == null) recentMisses[movie.id] = SystemClock.elapsedRealtime() }
+        }
+
+    private suspend fun fetchPosterUncached(movie: Movie): String? = withContext(Dispatchers.IO) {
         // If already cached and valid, return it
         val existing = cache[movie.id]
         if (!existing.isNullOrEmpty() && existing.startsWith("http")) {
@@ -299,3 +313,4 @@ object WikipediaPosterRepository {
         }
     }
 }
+

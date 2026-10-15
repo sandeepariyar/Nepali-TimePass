@@ -31,7 +31,10 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
     CinemaBackdrop {
         BoxWithConstraints(Modifier.fillMaxSize().padding(16.dp)) {
             val wide = maxWidth > maxHeight
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            val showPoster = maxHeight > 720.dp
+            val needsScroll = !wide && (maxHeight < 480.dp || LocalDensity.current.fontScale > 1.5f)
+            val bodyModifier = if (needsScroll) Modifier.fillMaxSize().verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()
+            Column(bodyModifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(if (ne) "राउन्ड ${uiState.currentRoundNumber} • अभिनय" else "ROUND ${uiState.currentRoundNumber} • ON STAGE", color = ModernAmber, style = MaterialTheme.typography.labelLarge)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("${uiState.team1.name}  ${uiState.team1.score}", Modifier.weight(1f), color = TextPrimary, maxLines = 2)
@@ -45,7 +48,7 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
                     Box(Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, false) }
                 } else {
                     Countdown(uiState, ne)
-                    Box(Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, maxHeight > 720.dp) }
+                    Box(if (needsScroll) Modifier.fillMaxWidth().heightIn(min = 120.dp) else Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, showPoster) }
                     ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

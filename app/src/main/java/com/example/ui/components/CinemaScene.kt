@@ -7,6 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -42,7 +46,7 @@ fun CinemaHeading(eyebrow: String, title: String, subtitle: String = "") {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)) {
         Text(eyebrow, color = ModernAmber, style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
-        Text(title, color = TextPrimary, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black,
+        Text(title, color = TextPrimary, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black, fontFamily = FontFamily.Serif,
             textAlign = TextAlign.Center)
         if (subtitle.isNotBlank()) { Spacer(Modifier.height(8.dp)); Text(subtitle, color = TextSecondary, textAlign = TextAlign.Center) }
     }
@@ -50,7 +54,19 @@ fun CinemaHeading(eyebrow: String, title: String, subtitle: String = "") {
 
 @Composable
 fun CinemaPanel(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), color = ModernSurface.copy(alpha = .97f),
+    Surface(modifier.fillMaxWidth().drawWithContent {
+        drawContent()
+        val brass = Color(0xFFF0BE71).copy(alpha = .60f)
+        val inset = 6.dp.toPx()
+        for (x in listOf(inset, size.width - inset)) for (y in listOf(inset, size.height - inset)) {
+            val r = 2.5.dp.toPx()
+            val jewel = Path().apply { moveTo(x, y-r); lineTo(x+r, y); lineTo(x, y+r); lineTo(x-r, y); close() }
+            drawPath(jewel, brass)
+        }
+        val mid = size.width / 2
+        drawLine(brass, Offset(mid - 18.dp.toPx(), inset), Offset(mid + 18.dp.toPx(), inset), 1.dp.toPx())
+        drawCircle(brass, 2.dp.toPx(), Offset(mid, inset))
+    }, shape = RoundedCornerShape(8.dp), color = ModernSurface.copy(alpha = .97f),
         border = BorderStroke(1.dp, ModernAmber.copy(alpha = .40f)), shadowElevation = 8.dp) {
         Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
     }

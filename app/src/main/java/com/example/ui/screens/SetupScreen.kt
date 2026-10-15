@@ -47,7 +47,7 @@ fun SetupScreen(
     var custom by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     if (rules) RulesDialog(onDismiss = { rules = false }, isNepali = ne)
-    if (custom) AddCustomMovieDialog(onDismiss = { custom = false }, onAddCustomMovie = onAddCustomMovie)
+    if (custom) AddCustomMovieDialog(onDismiss = { custom = false }, onAddCustomMovie = onAddCustomMovie, isNepali = ne)
     if (settings) AlertDialog(onDismissRequest = { settings = false },
         title = { Text(if (ne) "खेल सेटिङ" else "Set the scene") },
         text = { Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
