@@ -35,7 +35,6 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
     CinemaBackdrop {
         BoxWithConstraints(Modifier.fillMaxSize().padding(16.dp)) {
             val wide = maxWidth > maxHeight
-            val showPoster = maxHeight > 720.dp
             val needsScroll = !wide && (maxHeight < 480.dp || LocalDensity.current.fontScale > 1.5f)
             val bodyModifier = if (needsScroll) Modifier.fillMaxSize().verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()
             Column(bodyModifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -49,10 +48,10 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
                         Countdown(uiState, ne)
                         ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
                     }
-                    Box(Modifier.weight(1f).fillMaxHeight()) { SecretFilm(uiState, ne, onToggleReveal, false) }
+                    Box(Modifier.weight(1f).fillMaxHeight()) { SecretFilm(uiState, ne, onToggleReveal) }
                 } else {
                     Countdown(uiState, ne)
-                    Box(if (needsScroll) Modifier.fillMaxWidth().height(360.dp) else Modifier.weight(1f).fillMaxWidth()) { SecretFilm(uiState, ne, onToggleReveal, showPoster) }
+                    Box(if (needsScroll) Modifier.fillMaxWidth().height(360.dp) else Modifier.weight(1f).fillMaxWidth()) { SecretFilm(uiState, ne, onToggleReveal) }
                     ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -82,7 +81,7 @@ private fun Countdown(state: GameUiState, ne: Boolean) {
 }
 
 @Composable
-private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit, showPoster: Boolean) {
+private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit) {
     AnimatedContent(targetState = state.currentMovie, label = "movie_skip", modifier = Modifier.fillMaxSize()) { movie ->
         BoxWithConstraints(Modifier.fillMaxSize().clip(RoundedCornerShape(28.dp)).background(ModernSurface)) {
             if (state.isCardRevealed && movie != null) {

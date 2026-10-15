@@ -3,7 +3,7 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/gang_lion"
+        android:drawable="@drawable/ic_timepass_modern"
         android:gravity="center" />
 </layer-list>
 
