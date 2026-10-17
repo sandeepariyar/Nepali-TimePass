@@ -27,7 +27,7 @@ class WinnerUiTest {
         } }
         compose.onNodeWithTag("winner_heading").assertContentDescriptionEquals("WINNER!")
         compose.onNodeWithTag("winning_team_name").assertTextEquals("Kathmandu Crew")
-        compose.onNodeWithTag("final_points_2").performScrollTo().assertTextEquals("7")
+        compose.onNodeWithTag("final_points_2").assertIsDisplayed().assertTextEquals("7")
         compose.onNodeWithTag("play_again_button").assertIsDisplayed().performClick()
         assertEquals(1, played)
         compose.onRoot().captureRoboImage("build/reports/winner-team-two.png")

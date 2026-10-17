@@ -48,8 +48,8 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
             }
         }) { padding ->
             Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Box(Modifier.fillMaxWidth().height(170.dp)) {
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(Modifier.fillMaxWidth().height(140.dp)) {
                     Image(painterResource(R.drawable.winner_stage), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent, ModernBg))))
                     if (winner != null) WinnerBadgeBurst(Modifier.size(170.dp).align(Alignment.Center).offset(y = (-8).dp))
@@ -73,8 +73,6 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
                     color = TextPrimary, textAlign = TextAlign.Center, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 if (!tie) Text(if (ne) "आजको जमघटमा तपाईंहरू छाउनुभयो!" else "That’s a win for the group chat.",
                     color = TextSecondary, style = MaterialTheme.typography.bodyMedium)
-                Text(if (ne) "खेलको नतिजा • ${uiState.roundHistory.size} पालो" else "Final score • ${uiState.roundHistory.size} turns",
-                    color = TextSecondary, style = MaterialTheme.typography.bodySmall)
                 if (LocalDensity.current.fontScale > 1.3f) {
                     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         FinalScoreCard(uiState.team1, winner?.id == 1, ne, Modifier.fillMaxWidth())
@@ -110,10 +108,10 @@ private fun FinalScoreCard(team: Team, winner: Boolean, ne: Boolean, modifier: M
     val edge = if (winner) Color(0xFFFFC85B) else Color(team.colorHex).copy(alpha = .65f)
     Surface(modifier.testTag("final_score_${team.id}"), shape = RoundedCornerShape(24.dp),
         color = Color(team.colorHex).copy(alpha = .10f), border = BorderStroke(if (winner) 2.dp else 1.dp, edge)) {
-        Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Column(Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             if (winner) Icon(Icons.Default.EmojiEvents, if (ne) "विजेता" else "Winner", tint = edge, modifier = Modifier.size(20.dp))
             else Spacer(Modifier.height(20.dp))
-            Image(painterResource(gangBadge(team.id)), null, Modifier.size(52.dp))
+            Image(painterResource(gangBadge(team.id)), null, Modifier.size(48.dp))
             Text(team.name, textAlign = TextAlign.Center, color = TextPrimary, fontWeight = FontWeight.Bold,
                 minLines = 2, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
             Text("${team.score}", color = TextPrimary, fontSize = 42.sp, lineHeight = 46.sp,
