@@ -197,8 +197,9 @@ fun SetupScreen(
                 HomePanel(Modifier.testTag("cinema_section")) {
                     Text(if (ne) "चलचित्र छान्नुहोस्" else "Pick your cinema", color = Color.White, fontSize = 14.sp, lineHeight = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        SupportedCategories.forEach { category ->
+                    SupportedCategories.chunked(if (LocalDensity.current.fontScale > 1.3f) 2 else 4).forEach { row ->
+                      Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        row.forEach { category ->
                             val image = when (category) {
                                 MovieLanguage.NEPALI -> R.drawable.cat_nepali
                                 MovieLanguage.HINDI_MODERN -> R.drawable.cat_bollywood
@@ -223,6 +224,7 @@ fun SetupScreen(
                                 Text(label, Modifier.padding(vertical = 4.dp), color = Color.White, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1)
                             }
                         }
+                      }
                     }
                 }
                 HomePanel(Modifier.testTag("duration_section")) {
