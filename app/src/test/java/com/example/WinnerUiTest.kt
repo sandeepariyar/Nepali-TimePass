@@ -25,6 +25,7 @@ class WinnerUiTest {
                 team1 = Team(1, "Momo Gang", 0xFFE11D48, "", score = 2),
                 team2 = Team(2, "Kathmandu Crew", 0xFF2563EB, "", score = 7)), { played++ }, {})
         } }
+        compose.onNodeWithTag("winner_heading").assertContentDescriptionEquals("WINNER!")
         compose.onNodeWithTag("winning_team_name").assertTextEquals("Kathmandu Crew")
         compose.onNodeWithTag("final_points_2").performScrollTo().assertTextEquals("7")
         compose.onNodeWithTag("play_again_button").assertIsDisplayed().performClick()

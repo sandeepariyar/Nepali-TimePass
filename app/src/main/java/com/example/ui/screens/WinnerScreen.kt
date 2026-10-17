@@ -15,6 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +52,7 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
                 Box(Modifier.fillMaxWidth().height(170.dp)) {
                     Image(painterResource(R.drawable.winner_stage), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                     Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent, ModernBg))))
+                    if (winner != null) WinnerBadgeBurst(Modifier.size(170.dp).align(Alignment.Center).offset(y = (-8).dp))
                     if (winner != null) Image(painterResource(gangBadge(winner.id)), null,
                         Modifier.size(108.dp).align(Alignment.Center).offset(y = (-8).dp))
                     else Row(Modifier.align(Alignment.Center), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -56,12 +60,19 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
                         Image(painterResource(gangBadge(2)), null, Modifier.size(76.dp))
                     }
                 }
-                Text(if (tie) { if (ne) "बराबरी!" else "A PERFECT DRAW!" }
-                    else { if (ne) "विजेता!" else "WINNER!" }, color = Color(0xFFFFC85B),
-                    style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black, modifier = Modifier.testTag("winner_heading"))
+                if (tie) Text(if (ne) "बराबरी!" else "A PERFECT DRAW!", color = Color(0xFFFFC85B),
+                    style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black,
+                    modifier = Modifier.testTag("winner_heading"))
+                else Image(painterResource(if (ne) R.drawable.winner_title_ne else R.drawable.winner_title_en),
+                    null, Modifier.fillMaxWidth(.82f).height(88.dp).testTag("winner_heading").semantics {
+                        contentDescription = if (ne) "विजेता!" else "WINNER!"
+                        heading()
+                    }, contentScale = ContentScale.Fit)
                 Text(winner?.name ?: if (ne) "दुवै ग्याङ मञ्चमा छाए!" else "Both gangs stole the show!",
                     Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("winning_team_name"),
                     color = TextPrimary, textAlign = TextAlign.Center, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                if (!tie) Text(if (ne) "आजको जमघटमा तपाईंहरू छाउनुभयो!" else "That’s a win for the group chat.",
+                    color = TextSecondary, style = MaterialTheme.typography.bodyMedium)
                 Text(if (ne) "खेलको नतिजा • ${uiState.roundHistory.size} पालो" else "Final score • ${uiState.roundHistory.size} turns",
                     color = TextSecondary, style = MaterialTheme.typography.bodySmall)
                 if (LocalDensity.current.fontScale > 1.3f) {
@@ -89,7 +100,6 @@ fun WinnerScreen(uiState: GameUiState, onPlayAgain: () -> Unit, onReturnToSetup:
                 Spacer(Modifier.height(8.dp))
             }
         }
-        ConfettiEffect(particleCount = 30)
     }
 }
 

@@ -15,3 +15,9 @@ Standard portrait phones now use a compact single-page layout: four category car
 The final score screen uses a new generated, text-free `winner_stage.webp` background inspired by the supplied image(7).png. Emblems, gang names, counts, crown, winner/draw labels and actions remain native and bilingual. Replays/setup actions are pinned; match history expands on demand. Existing one-shot confetti finishes after 1.4 seconds; no idle animation loop is added. Test coverage includes team-two wins, ties, history expansion and compact setup controls.
 
 Dialog widths are explicitly responsive (92% of the available width, capped at 560dp), avoiding platform-width oscillation under Robolectric's explicit phone-size qualifiers while preserving native dialog semantics. See Robolectric issue #8460: https://github.com/robolectric/robolectric/issues/8460. No tests are skipped or timeouts extended.
+
+## Victory and handoff follow-up
+
+The up-next screen reuses the illustrated gang badges, with a 136dp active badge, compact scores, and a pinned one-tap reveal/start action. The winner uses localized transparent gold brush title art with a red underline, native live names/scores, and a single 1.6-second localized badge burst that pauses outside the foreground. No continuous celebration animation is used.
+
+Title art generated with the built-in image generation tool. Prompt: transparent mobile game title, exact WINNER! / विजेता!, gold foil brush lettering with red paint underline, no scene or other text. Optimized WebPs: app/src/main/res/drawable-nodpi/winner_title_en.webp and winner_title_ne.webp.
