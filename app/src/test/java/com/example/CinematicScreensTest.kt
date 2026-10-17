@@ -39,6 +39,21 @@ class CinematicScreensTest {
         compose.onRoot().captureRoboImage("build/reports/cinematic-categories.png")
         vm.returnToSetup()
     }
+    @Test fun homeCinemaSelectionPersistsIntoSetupAndHelpOpens() {
+        val app = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.app.Application>()
+        val vm = com.example.viewmodel.GameViewModel(app, false)
+        compose.setContent { MyApplicationTheme { GameAppContent(vm) } }
+        compose.onNodeWithTag("home_cinema_1").performScrollTo().performClick()
+        Assert.assertEquals(setOf(MovieLanguage.HINDI_MODERN, MovieLanguage.HINDI_CLASSIC),
+            vm.uiState.value.settings.selectedLanguages)
+        compose.onNodeWithTag("home_help_button").performScrollTo().performClick()
+        compose.onNode(isDialog()).assertIsDisplayed()
+        compose.onNodeWithText("खेलौँ!").performClick()
+        compose.onNodeWithTag("splash_continue_button").performScrollTo().performClick()
+        compose.onNodeWithTag("start_game_button").assertIsDisplayed()
+        Assert.assertEquals(setOf(MovieLanguage.HINDI_MODERN, MovieLanguage.HINDI_CLASSIC),
+            vm.uiState.value.settings.selectedLanguages)
+    }
     @Test fun handoffScreenshot() {
         compose.setContent { MyApplicationTheme { ReadyTurnScreen(GameUiState(), {}, {}, {}) } }
         compose.onRoot().captureRoboImage("build/reports/cinematic-ready.png")
@@ -49,3 +64,4 @@ class CinematicScreensTest {
         compose.onRoot().captureRoboImage("build/reports/cinematic-winner.png")
     }
 }
+

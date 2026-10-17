@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -45,14 +46,14 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
                 }
                 if (wide) Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Countdown(uiState, ne)
-                        ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
+                        Countdown(uiState, ne, onTogglePauseTimer)
+                        ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie)
                     }
                     Box(Modifier.weight(1f).fillMaxHeight()) { SecretFilm(uiState, ne, onToggleReveal) }
                 } else {
-                    Countdown(uiState, ne)
+                    Countdown(uiState, ne, onTogglePauseTimer)
                     Box(if (needsScroll) Modifier.fillMaxWidth().height(360.dp) else Modifier.weight(1f).fillMaxWidth()) { SecretFilm(uiState, ne, onToggleReveal) }
-                    ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
+                    ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     TextButton(onClick = onToggleSound) { Text(if (uiState.settings.soundEffectsEnabled) { if (ne) "आवाज बन्द" else "Mute" } else { if (ne) "आवाज खोल्नुहोस्" else "Unmute" }, color = ModernAmber) }
@@ -68,15 +69,27 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
 }
 
 @Composable
-private fun Countdown(state: GameUiState, ne: Boolean) {
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+private fun Countdown(state: GameUiState, ne: Boolean, onPause: () -> Unit) {
+    val urgent = state.remainingSeconds <= 10
+    val accent by animateColorAsState(if (urgent) Color(0xFFFF6577) else ModernAmber, label = "timer_urgency")
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(String.format(Locale.ROOT, "%02d:%02d", state.remainingSeconds / 60, state.remainingSeconds % 60),
-            fontSize = 44.sp, lineHeight = 52.sp, fontWeight = FontWeight.Black,
-            color = TextPrimary, modifier = Modifier.testTag("countdown"))
+            fontSize = 48.sp, lineHeight = 56.sp, fontWeight = FontWeight.Black,
+            color = TextPrimary, modifier = Modifier.weight(1f).testTag("countdown"))
+        FilledTonalButton(onClick = onPause, modifier = Modifier.testTag("pause_timer_button")) {
+            Text(if (state.isTimerPaused) { if (ne) "जारी" else "Resume" } else { if (ne) "रोकौँ" else "Pause" })
+        }
+        }
         Text(if (state.isTimerPaused) { if (ne) "समय रोकिएको छ" else "Paused" }
             else if (state.remainingSeconds <= 10) { if (ne) "१० सेकेन्डभन्दा कम बाँकी!" else "10 seconds or less!" }
             else { if (ne) "नबोली अभिनय गर्नुहोस्" else "No talking. Just acting." },
-            color = ModernAmber, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+            color = accent, style = MaterialTheme.typography.labelMedium)
+        LinearProgressIndicator(
+            progress = { (state.remainingSeconds.toFloat() / state.settings.timerDurationSeconds.coerceAtLeast(1)).coerceIn(0f, 1f) },
+            modifier = Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(50)),
+            color = accent, trackColor = ModernCard)
     }
 }
 
@@ -111,14 +124,14 @@ private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit) {
 }
 
 @Composable
-private fun ActingControls(state: GameUiState, ne: Boolean, correct: () -> Unit, pass: () -> Unit, skip: () -> Unit, pause: () -> Unit) {
+private fun ActingControls(state: GameUiState, ne: Boolean, correct: () -> Unit, pass: () -> Unit, skip: () -> Unit) {
     val canGuess = state.isTimerRunning && state.remainingSeconds > 0
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         CinemaButton(if (ne) "मिल्यो! +१" else "CORRECT! +1", correct, Modifier.fillMaxWidth().testTag("guess_correct_button"), enabled = canGuess)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CinemaButton(if (ne) "पास" else "Pass", pass, Modifier.weight(1f).testTag("guess_wrong_button"), secondary = true, enabled = canGuess)
             CinemaButton(if (ne) "फिल्म फेरौँ" else "Skip film", skip, Modifier.weight(1f).testTag("skip_movie_button"), secondary = true, enabled = canGuess)
-            CinemaButton(if (state.isTimerPaused) { if (ne) "जारी" else "Resume" } else { if (ne) "रोकौँ" else "Pause" }, pause, Modifier.weight(1f).testTag("pause_timer_button"), secondary = true)
         }
     }
 }
+

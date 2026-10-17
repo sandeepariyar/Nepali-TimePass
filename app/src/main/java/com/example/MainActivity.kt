@@ -140,6 +140,8 @@ fun GameAppContent(
                 SplashScreen(
                     appLanguage = uiState.appLanguage,
                     onToggleLanguage = viewModel::toggleAppLanguage,
+                    selectedLanguages = uiState.settings.selectedLanguages,
+                    onSelectCinema = viewModel::setLanguagePreset,
                     onContinue = viewModel::dismissSplash
                 )
             }
@@ -210,4 +212,5 @@ fun GameAppContent(
         }
     }
 }
+
 
