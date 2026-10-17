@@ -65,7 +65,8 @@ class RoundTimerService : Service() {
                     }
                     if (lastSecond in 1..10) {
                         audio.isEnabled = RoundTimer.soundEnabled
-                        audio.playTick(1f + (10 - lastSecond) * .05f)
+                        if (RoundTimer.consumeTenSecondWarning(lastSecond)) audio.playTenSecondWarning()
+                        else audio.playTick(1f + (10 - lastSecond) * .05f)
                     }
                 }
                 delay(100)

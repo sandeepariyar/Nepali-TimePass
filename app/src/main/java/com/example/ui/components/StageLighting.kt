@@ -29,21 +29,14 @@ fun StageLighting(remaining: Int, total: Int, running: Boolean, modifier: Modifi
         val p = phase // State is read in draw, avoiding recomposition of movie and poster.
         val urgent = remaining <= 10
         val progress = remaining.toFloat() / total.coerceAtLeast(1)
-        val warm = Color(0xFFF0BE71)
-        val accent = if (urgent) Color(0xFFE66145) else warm
+        val warm = Color(0xFFB7F36B)
+        val accent = if (urgent) Color(0xFFFF6577) else warm
         val glow = if (urgent) .14f + .12f * (sin(p * 5f) + 1f) / 2f else .07f
         drawRect(Brush.radialGradient(listOf(accent.copy(alpha = glow), Color.Transparent), center = Offset(size.width / 2, size.height * .30f), radius = size.maxDimension * .7f))
-        // Marquee bulbs extinguish like a theatre closing, rather than a conventional timer ring.
-        val count = 24
-        for (i in 0 until count) {
-            val x = (i + .5f) / count * size.width
-            val on = i.toFloat() / count < progress
-            val a = if (on) .85f + .15f * sin(p * 2 + i) else .10f
-            for (y in listOf(12f, size.height - 12f)) {
-                if (on) drawCircle(accent.copy(alpha = .08f), 10f, Offset(x, y))
-                drawCircle(accent.copy(alpha = a.coerceIn(0f, 1f)), 3f, Offset(x, y))
-            }
-        }
+        // A quiet edge progress strip, without marquee bulbs or a timer ring.
+        val y = size.height - 4f
+        drawLine(accent.copy(alpha = .10f), Offset(0f, y), Offset(size.width, y), 4f, StrokeCap.Round)
+        drawLine(accent, Offset(0f, y), Offset(size.width * progress, y), 4f, StrokeCap.Round)
         if (urgent) {
             // Slow ambient movement; no fast flashing or full-screen luminance changes.
             repeat(12) { i ->

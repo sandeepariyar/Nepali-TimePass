@@ -299,7 +299,8 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
                 phase = GamePhase.ACTING,
                 roundInterrupted = false,
                 currentMovie = nextMovie,
-                isCardRevealed = false,
+                lastRoundResult = null,
+                isCardRevealed = true,
                 remainingSeconds = duration,
                 isTimerRunning = true,
                 isTimerPaused = false
@@ -391,6 +392,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
                 isTimerPaused = false
             )
         }
+        proceedToNextTurn()
     }
 
     fun onGuessWrongOrPass() {
@@ -433,6 +435,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
                 isTimerPaused = false
             )
         }
+        proceedToNextTurn()
     }
 
     private fun onTimeUp() {
@@ -472,6 +475,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
                 isTimerPaused = false
             )
         }
+        proceedToNextTurn()
     }
 
     fun proceedToNextTurn() {
@@ -486,8 +490,7 @@ class GameViewModel @JvmOverloads constructor(application: Application, private 
                 currentRoundNumber = nextRound,
                 remainingSeconds = it.settings.timerDurationSeconds,
                 isCardRevealed = false,
-                currentMovie = null,
-                lastRoundResult = null
+                currentMovie = null
             )
         }
     }

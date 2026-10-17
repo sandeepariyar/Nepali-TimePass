@@ -44,6 +44,7 @@ import com.example.model.Movie
 import com.example.model.MovieDifficulty
 import com.example.model.MovieLanguage
 import com.example.ui.theme.ModernBg
+import com.example.ui.theme.ModernBg
 import com.example.ui.theme.ModernCard
 import com.example.ui.theme.ModernCrimson
 import com.example.ui.theme.ModernEmerald
@@ -299,7 +300,7 @@ fun AddCustomMovieDialog(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = ModernIndigo,
-                        contentColor = Color.White
+                        contentColor = ModernBg
                     ),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
                     modifier = Modifier

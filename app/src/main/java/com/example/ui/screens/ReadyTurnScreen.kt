@@ -16,8 +16,16 @@ fun ReadyTurnScreen(uiState: GameUiState, onStartTurn: () -> Unit, onConcludeGam
     val ne = uiState.appLanguage == AppLanguage.NEPALI
     val gang = if (uiState.activeTeamId == 1) uiState.team1 else uiState.team2
     CinemaScene {
+        uiState.lastRoundResult?.let { result ->
+            CinemaPanel {
+                Text(if (result.isCorrect) { if (ne) "मिल्यो! +१ अङ्क" else "Correct! +1 point" }
+                    else if (result.timeUsedSeconds >= uiState.settings.timerDurationSeconds) { if (ne) "समय सकियो" else "Time’s up" }
+                    else { if (ne) "पास गरियो" else "Passed" }, color = if (result.isCorrect) ModernAmber else TextSecondary)
+                Text("${result.teamName} · ${if (ne && result.movie.nativeTitle.isNotBlank()) result.movie.nativeTitle else result.movie.title}", color = TextPrimary)
+            }
+        }
         CinemaHeading(if (ne) "राउन्ड ${uiState.currentRoundNumber}" else "ROUND ${uiState.currentRoundNumber}",
-            if (ne) "मञ्च तपाईंको हो!" else "The stage is yours.", gang.name)
+            if (ne) "अब तपाईंको पालो" else "You’re up next.", gang.name)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GangScore(uiState.team1, Modifier.weight(1f), uiState.activeTeamId == 1)
             GangScore(uiState.team2, Modifier.weight(1f), uiState.activeTeamId == 2)
@@ -28,7 +36,7 @@ fun ReadyTurnScreen(uiState: GameUiState, onStartTurn: () -> Unit, onConcludeGam
             Text(if (ne) "फिल्म गोप्य राख्नुहोस्। नबोली अभिनय गर्नुहोस्। ${uiState.settings.timerDurationSeconds} सेकेन्डमा अनुमान मिलाउनुहोस्।" else
                 "Keep the film secret. Act without speaking. Your gang has ${uiState.settings.timerDurationSeconds} seconds to guess.", color = TextPrimary)
         }
-        CinemaButton(if (ne) "बत्ती, क्यामेरा, अभिनय!" else "LIGHTS. CAMERA. ACTION!", onStartTurn, Modifier.fillMaxWidth().testTag("start_turn_button"))
+        CinemaButton(if (ne) "फिल्म हेरेर सुरु गरौँ" else "Reveal & start", onStartTurn, Modifier.fillMaxWidth().testTag("start_turn_button"))
         CinemaButton(if (ne) "विजेता हेर्नुहोस्" else "Finish match", onConcludeGame, Modifier.fillMaxWidth(), secondary = true)
         CinemaButton(if (ne) "सेटअपमा फर्कनुहोस्" else "Back to setup", onBackToSetup, Modifier.fillMaxWidth().testTag("back_to_setup_button"), secondary = true)
     }
