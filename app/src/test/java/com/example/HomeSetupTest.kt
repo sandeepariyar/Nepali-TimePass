@@ -40,27 +40,33 @@ class HomeSetupTest {
     }
     @Test fun categoryDurationAndStickyStartUseExistingGameState() {
         render()
-        compose.onNodeWithTag("cinema_section").performScrollTo()
-        compose.onNodeWithTag("category_NEPALI").performScrollTo().assertIsOn().performClick().assertIsOff()
+        compose.onRoot().captureRoboImage("build/reports/package-home-compact-english.png")
+        compose.onNodeWithTag("cinema_section").let { if (!it.isDisplayed()) it.performScrollTo() }
+        compose.onNodeWithTag("team_1_card").assertIsDisplayed()
+        compose.onNodeWithTag("team_2_card").assertIsDisplayed()
+        compose.onNodeWithTag("duration_menu").assertIsDisplayed()
+        compose.onNodeWithTag("category_NEPALI").assertIsOn().performClick().assertIsOff()
         assertFalse(MovieLanguage.NEPALI in vm.uiState.value.settings.selectedLanguages)
-        compose.onNodeWithTag("duration_section").performScrollTo()
-        compose.onNodeWithTag("duration_90").performScrollTo().performClick().assertIsSelected()
+        compose.onNodeWithTag("duration_menu").performClick()
+        compose.onNodeWithTag("duration_90").performClick()
         assertEquals(90, vm.uiState.value.settings.timerDurationSeconds)
         compose.onNodeWithTag("start_game_button").assertIsDisplayed().performClick()
         assertEquals(GamePhase.READY_TURN, vm.uiState.value.phase)
     }
     @Test fun editableGangNamesAndBothLanguagesRemainAvailable() {
         render()
-        compose.onNodeWithTag("team_1_name").performScrollTo().performTextReplacement("Kathmandu Crew")
+        compose.onNodeWithTag("team_1_card").performClick()
+        compose.onNodeWithTag("team_1_name").performTextReplacement("Kathmandu Crew")
         compose.runOnIdle { assertEquals("Kathmandu Crew", vm.uiState.value.team1.name) }
-        compose.onNodeWithTag("setup_language_NEPALI").performScrollTo().performClick()
+        compose.onNodeWithTag("gang_editor_done").performClick()
+        compose.onNodeWithTag("setup_language_NEPALI").performClick()
         compose.runOnIdle { assertEquals(AppLanguage.NEPALI, vm.uiState.value.appLanguage) }
         compose.onNodeWithTag("start_game_button").assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/package-home-nepali.png")
     }
     @Test fun filmLibraryAndCustomFilmDialogRemainReachable() {
         render()
-        compose.onNodeWithTag("film_library_button").performScrollTo().performClick()
+        compose.onNodeWithTag("film_library_button").performClick()
         compose.onNodeWithText("Search online films").assertIsDisplayed()
         compose.onNodeWithTag("add_custom_movie_button").performScrollTo().performClick()
         compose.onNodeWithText("Movie Title (English)").assertExists()
@@ -68,7 +74,7 @@ class HomeSetupTest {
     @Test fun largeTextKeepsStartVisibleWhileTeamsStack() {
         render(true)
         compose.onNodeWithTag("start_game_button").assertIsDisplayed()
-        compose.onNodeWithTag("team_2_name").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("team_2_card").let { if (!it.isDisplayed()) it.performScrollTo(); it.assertIsDisplayed() }
         compose.onNodeWithTag("start_game_button").assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/package-home-large-text.png")
     }
@@ -76,7 +82,7 @@ class HomeSetupTest {
     fun landscapeKeepsStartVisible() {
         render()
         compose.onNodeWithTag("start_game_button").assertIsDisplayed()
-        compose.onNodeWithTag("team_2_name").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("team_2_card").let { if (!it.isDisplayed()) it.performScrollTo(); it.assertIsDisplayed() }
         compose.onRoot().captureRoboImage("build/reports/package-home-landscape.png")
     }
 }

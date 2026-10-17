@@ -7,3 +7,9 @@ The existing callback signature, editable team names/colors, language switching,
 Also restores home/icon bitmap resources already referenced by main, executable Gradle wrapper, and the standard generated Android debug key in place of a missing repository debug.keystore. Existing timer, poster and scoring code is unchanged.
 
 Device checks remain necessary for keyboard/insets, TalkBack, very large fonts, and physical audio/notification behavior.
+
+## Compact setup and final score follow-up
+
+Standard portrait phones now use a compact single-page layout: four category cards in one row, a duration dropdown, compact team cards that open name/color editors, and a library shortcut. The previous editable callback contract is retained. Small heights, landscape and accessibility font scaling use a scrolling fallback instead of clipping controls. Keyboard/inset padding protects the main action.
+
+The final score screen uses a new generated, text-free `winner_stage.webp` background inspired by the supplied image(7).png. Emblems, gang names, counts, crown, winner/draw labels and actions remain native and bilingual. Replays/setup actions are pinned; match history expands on demand. Existing one-shot confetti finishes after 1.4 seconds; no idle animation loop is added. Test coverage includes team-two wins, ties, history expansion and compact setup controls.
