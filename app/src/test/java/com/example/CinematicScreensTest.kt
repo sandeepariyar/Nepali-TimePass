@@ -29,6 +29,7 @@ class CinematicScreensTest {
         compose.setContent { MyApplicationTheme { GameAppContent(vm) } }
         compose.onNodeWithTag("start_game_button").assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/cinematic-setup.png")
+        compose.onNodeWithTag("cinema_section").performScrollTo()
         compose.onNodeWithTag("category_NEPALI").performScrollTo().assertIsDisplayed()
         compose.onRoot().captureRoboImage("build/reports/cinematic-categories.png")
         vm.returnToSetup()

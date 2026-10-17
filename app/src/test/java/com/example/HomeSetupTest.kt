@@ -40,8 +40,10 @@ class HomeSetupTest {
     }
     @Test fun categoryDurationAndStickyStartUseExistingGameState() {
         render()
+        compose.onNodeWithTag("cinema_section").performScrollTo()
         compose.onNodeWithTag("category_NEPALI").performScrollTo().assertIsOn().performClick().assertIsOff()
         assertFalse(MovieLanguage.NEPALI in vm.uiState.value.settings.selectedLanguages)
+        compose.onNodeWithTag("duration_section").performScrollTo()
         compose.onNodeWithTag("duration_90").performScrollTo().performClick().assertIsSelected()
         assertEquals(90, vm.uiState.value.settings.timerDurationSeconds)
         compose.onNodeWithTag("start_game_button").assertIsDisplayed().performClick()

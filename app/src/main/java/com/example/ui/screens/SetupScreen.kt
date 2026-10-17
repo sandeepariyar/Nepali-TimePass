@@ -108,7 +108,7 @@ fun SetupScreen(
         onDismissRequest = { showSettings = false },
         title = { Text(if (ne) "सेटिङ" else "Settings") },
         text = {
-            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(if (ne) "खेलको आवाज" else "Game sound")
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(if (ne) "आवाज चालू" else "Sound effects", Modifier.weight(1f))
@@ -121,36 +121,12 @@ fun SetupScreen(
         confirmButton = { TextButton(onClick = { showSettings = false }) { Text(if (ne) "ठीक छ" else "Done") } }
     )
 
-    if (showLibrary) AlertDialog(
-        onDismissRequest = { showLibrary = false },
-        title = { Text(if (ne) "चलचित्र सङ्ग्रह" else "Film library") },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(if (ne) "${uiState.totalMoviesCount} चलचित्र तयार" else "${uiState.totalMoviesCount} films ready")
-                Text(if (uiState.isOnlineSyncing) {
-                    if (ne) "चलचित्र थपिँदैछन्…" else "Fetching films…"
-                } else {
-                    if (ne) "अनलाइन चलचित्र र पोस्टर" else "Online films and posters"
-                }, color = Muted)
-                OutlinedButton(onClick = onFetchMoreOnline, enabled = !uiState.isOnlineSyncing, modifier = Modifier.fillMaxWidth()) {
-                    Text(if (ne) "चलचित्र अपडेट" else "Refresh film library")
-                }
-                OutlinedTextField(
-                    value = search, onValueChange = { search = it }, singleLine = true,
-                    label = { Text(if (ne) "फिल्म खोज्नुहोस्" else "Search online films") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Button(onClick = { onSearchOnlineAndAdd(search.trim()); search = "" },
-                    enabled = search.isNotBlank() && !uiState.isOnlineSyncing,
-                    modifier = Modifier.fillMaxWidth()) {
-                    Text(if (ne) "खोजेर थप्नुहोस्" else "Search & add")
-                }
-                TextButton(onClick = { showLibrary = false; showCustom = true }, modifier = Modifier.fillMaxWidth().testTag("add_custom_movie_button")) {
-                    Text(if (ne) "+ आफ्नै चलचित्र थप्नुहोस्" else "+ Add your own film")
-                }
-            }
-        },
-        confirmButton = { TextButton(onClick = { showLibrary = false }) { Text(if (ne) "बन्द" else "Close") } }
+    if (showLibrary) HomeFilmLibraryDialog(
+        ne = ne, movieCount = uiState.totalMoviesCount, syncing = uiState.isOnlineSyncing,
+        search = search, onSearchChange = { search = it },
+        onRefresh = onFetchMoreOnline,
+        onSearch = { onSearchOnlineAndAdd(search.trim()); search = "" },
+        onCustom = { showLibrary = false; showCustom = true }, onDismiss = { showLibrary = false }
     )
 
     Scaffold(containerColor = HomeBg, bottomBar = {
@@ -214,7 +190,7 @@ fun SetupScreen(
                 }
                 Spacer(Modifier.height(14.dp))
                 BoxWithConstraints(Modifier.fillMaxWidth()) {
-                    if (maxWidth >= 350.dp && LocalDensity.current.fontScale <= 1.2f) {
+                    if (maxWidth >= 280.dp && LocalDensity.current.fontScale <= 1.2f) {
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             HomeGangCard(uiState.team1, ne, R.drawable.gang_lightning,
                                 onTeam1NameChange, onTeam1ColorChange, onRandomizeTeam1, Modifier.weight(1f))
@@ -233,7 +209,7 @@ fun SetupScreen(
             }
 
             Spacer(Modifier.height(12.dp))
-            HomePanel {
+            HomePanel(Modifier.testTag("cinema_section")) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.VideoLibrary, null, tint = Color(0xFFFFB64F))
                     Spacer(Modifier.width(9.dp))
@@ -294,7 +270,7 @@ fun SetupScreen(
                 }
             }
             Spacer(Modifier.height(12.dp))
-            HomePanel {
+            HomePanel(Modifier.testTag("duration_section")) {
                 Text(if (ne) "पालोको समय" else "Round duration", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -316,8 +292,8 @@ fun SetupScreen(
 }
 
 @Composable
-private fun HomePanel(content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(23.dp))
+private fun HomePanel(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(23.dp))
         .background(PanelBg).border(1.dp, CardStroke, RoundedCornerShape(23.dp)).padding(14.dp), content = content)
 }
 
