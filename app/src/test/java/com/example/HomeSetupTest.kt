@@ -45,6 +45,9 @@ class HomeSetupTest {
         compose.onNodeWithTag("team_1_card").assertIsDisplayed()
         compose.onNodeWithTag("team_2_card").assertIsDisplayed()
         compose.onNodeWithTag("duration_menu").assertIsDisplayed()
+        listOf("NEPALI", "HINDI_MODERN", "HINDI_CLASSIC", "SOUTH_INDIAN").forEach {
+            compose.onNodeWithTag("category_$it").assertIsDisplayed()
+        }
         compose.onNodeWithTag("category_NEPALI").assertIsOn().performClick().assertIsOff()
         assertFalse(MovieLanguage.NEPALI in vm.uiState.value.settings.selectedLanguages)
         compose.onNodeWithTag("duration_menu").performClick()

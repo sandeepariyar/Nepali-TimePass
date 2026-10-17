@@ -105,7 +105,7 @@ private fun FinalScoreCard(team: Team, winner: Boolean, ne: Boolean, modifier: M
             else Spacer(Modifier.height(20.dp))
             Image(painterResource(gangBadge(team.id)), null, Modifier.size(52.dp))
             Text(team.name, textAlign = TextAlign.Center, color = TextPrimary, fontWeight = FontWeight.Bold,
-                maxLines = 3, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
+                minLines = 2, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
             Text("${team.score}", color = TextPrimary, fontSize = 42.sp, lineHeight = 46.sp,
                 fontWeight = FontWeight.Black, modifier = Modifier.testTag("final_points_${team.id}"))
         }

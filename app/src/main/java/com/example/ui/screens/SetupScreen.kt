@@ -157,11 +157,11 @@ fun SetupScreen(
         }
     }) { insets ->
         BoxWithConstraints(Modifier.padding(insets).fillMaxSize()) {
-            val compact = maxHeight >= 440.dp && LocalDensity.current.fontScale <= 1.25f
-            val bannerHeight = if (compact) (maxHeight * .22f).coerceIn(72.dp, 130.dp) else 84.dp
+            val compact = maxHeight >= 504.dp && LocalDensity.current.fontScale <= 1.25f
+            val bannerHeight = if (compact) (maxHeight - 392.dp).coerceIn(72.dp, 152.dp) else 84.dp
             val body = if (compact) Modifier.fillMaxSize() else Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             var durationMenu by remember { mutableStateOf(false) }
-            Column(body.padding(horizontal = 12.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(body.padding(horizontal = 12.dp, vertical = 4.dp), verticalArrangement = if (compact) Arrangement.SpaceBetween else Arrangement.spacedBy(6.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     IconButton(onClick = { showSettings = true }) { Icon(Icons.Default.Settings, if (ne) "सेटिङ" else "Settings", tint = Color.White) }
                     Row(Modifier.selectableGroup()) {
@@ -183,7 +183,7 @@ fun SetupScreen(
                 Image(painterResource(R.drawable.home_header), if (ne) "नेपाली टाइमपास" else "Nepali TimePass",
                     Modifier.fillMaxWidth().height(bannerHeight).clip(RoundedCornerShape(18.dp)), contentScale = ContentScale.Fit)
                 HomePanel {
-                    Text(if (ne) "तपाईंका ग्याङ • नाम र रङ बदल्न थिच्नुहोस्" else "Your gangs • Tap to edit name & color", color = Muted, fontSize = 12.sp)
+                    Text(if (ne) "तपाईंका ग्याङ • नाम र रङ बदल्न थिच्नुहोस्" else "Your gangs • Tap to edit name & color", color = Muted, fontSize = 12.sp, lineHeight = 16.sp)
                     Spacer(Modifier.height(4.dp))
                     if (LocalDensity.current.fontScale > 1.3f) {
                         CompactGangCard(uiState.team1, ne, R.drawable.gang_lightning, { editingTeam = 1 }, Modifier.fillMaxWidth())
@@ -195,7 +195,7 @@ fun SetupScreen(
                     }
                 }
                 HomePanel(Modifier.testTag("cinema_section")) {
-                    Text(if (ne) "चलचित्र छान्नुहोस्" else "Pick your cinema", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(if (ne) "चलचित्र छान्नुहोस्" else "Pick your cinema", color = Color.White, fontSize = 14.sp, lineHeight = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         SupportedCategories.forEach { category ->
@@ -217,17 +217,17 @@ fun SetupScreen(
                                 .toggleable(active, role = Role.Checkbox, onValueChange = { onToggleLanguage(category) }).testTag("category_${category.name}"),
                                 horizontalAlignment = Alignment.CenterHorizontally) {
                                 Box {
-                                    Image(painterResource(image), null, Modifier.fillMaxWidth().height(48.dp), contentScale = ContentScale.Crop)
+                                    Image(painterResource(image), null, Modifier.fillMaxWidth().height(40.dp), contentScale = ContentScale.Crop)
                                     if (active) Icon(Icons.Default.CheckCircle, null, Modifier.align(Alignment.TopEnd).padding(3.dp).size(16.dp), tint = Lime)
                                 }
-                                Text(label, Modifier.padding(vertical = 4.dp), color = Color.White, fontSize = 11.sp, maxLines = 1)
+                                Text(label, Modifier.padding(vertical = 4.dp), color = Color.White, fontSize = 11.sp, lineHeight = 14.sp, maxLines = 1)
                             }
                         }
                     }
                 }
                 HomePanel(Modifier.testTag("duration_section")) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(if (ne) "पालोको समय" else "Round time", color = Color.White, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                        Text(if (ne) "पालोको समय" else "Round time", color = Color.White, fontSize = 13.sp, lineHeight = 18.sp, modifier = Modifier.weight(1f))
                         Box {
                             TextButton(onClick = { durationMenu = true }, modifier = Modifier.testTag("duration_menu")) {
                                 Text("${uiState.settings.timerDurationSeconds}s ▾", color = Lime, fontWeight = FontWeight.Bold)
@@ -256,14 +256,17 @@ private fun HomePanel(modifier: Modifier = Modifier, content: @Composable Column
 
 @Composable
 private fun CompactGangCard(team: Team, ne: Boolean, drawable: Int, onEdit: () -> Unit, modifier: Modifier) {
-    Column(modifier.clip(RoundedCornerShape(14.dp)).background(Color(team.colorHex).copy(alpha = .12f))
+    Row(modifier.heightIn(min = 72.dp).clip(RoundedCornerShape(14.dp)).background(Color(team.colorHex).copy(alpha = .12f))
         .border(1.dp, Color(team.colorHex).copy(alpha = .6f), RoundedCornerShape(14.dp)).clickable(onClick = onEdit)
-        .testTag("team_${team.id}_card").padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        .testTag("team_${team.id}_card").padding(6.dp), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         AnimatedContent(targetState = team.emoji to drawable, label = "gang_shuffle") { emblem ->
             Image(painterResource(emblem.second), null, Modifier.size(40.dp), contentScale = ContentScale.Fit)
         }
-        Text(team.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp,
-            maxLines = 2, overflow = TextOverflow.Ellipsis)
-        Text(if (ne) "बदल्नुहोस्" else "Edit", color = Muted, fontSize = 10.sp)
+        Column(Modifier.weight(1f)) {
+            Text(team.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp, lineHeight = 16.sp,
+                maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(if (ne) "बदल्नुहोस्" else "Edit", color = Muted, fontSize = 10.sp, lineHeight = 12.sp)
+        }
     }
 }
