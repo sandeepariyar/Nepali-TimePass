@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,6 +9,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
@@ -31,7 +36,6 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
     CinemaBackdrop {
         BoxWithConstraints(Modifier.fillMaxSize().padding(16.dp)) {
             val wide = maxWidth > maxHeight
-            val showPoster = maxHeight > 720.dp
             val needsScroll = !wide && (maxHeight < 480.dp || LocalDensity.current.fontScale > 1.5f)
             val bodyModifier = if (needsScroll) Modifier.fillMaxSize().verticalScroll(rememberScrollState()) else Modifier.fillMaxSize()
             Column(bodyModifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -42,14 +46,14 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
                 }
                 if (wide) Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Countdown(uiState, ne)
-                        ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
+                        Countdown(uiState, ne, onTogglePauseTimer)
+                        ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie)
                     }
-                    Box(Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, false) }
+                    Box(Modifier.weight(1f).fillMaxHeight()) { SecretFilm(uiState, ne, onToggleReveal) }
                 } else {
-                    Countdown(uiState, ne)
-                    Box(if (needsScroll) Modifier.fillMaxWidth().heightIn(min = 120.dp) else Modifier.weight(1f).verticalScroll(rememberScrollState())) { SecretFilm(uiState, ne, onToggleReveal, showPoster) }
-                    ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie, onTogglePauseTimer)
+                    Countdown(uiState, ne, onTogglePauseTimer)
+                    Box(if (needsScroll) Modifier.fillMaxWidth().height(360.dp) else Modifier.weight(1f).fillMaxWidth()) { SecretFilm(uiState, ne, onToggleReveal) }
+                    ActingControls(uiState, ne, onGuessCorrect, onGuessWrongOrPass, onSkipMovie)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     TextButton(onClick = onToggleSound) { Text(if (uiState.settings.soundEffectsEnabled) { if (ne) "आवाज बन्द" else "Mute" } else { if (ne) "आवाज खोल्नुहोस्" else "Unmute" }, color = ModernAmber) }
@@ -65,52 +69,69 @@ fun ActingScreen(uiState: GameUiState, onToggleReveal: () -> Unit, onTogglePause
 }
 
 @Composable
-private fun Countdown(state: GameUiState, ne: Boolean) {
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+private fun Countdown(state: GameUiState, ne: Boolean, onPause: () -> Unit) {
+    val urgent = state.remainingSeconds <= 10
+    val accent by animateColorAsState(if (urgent) Color(0xFFFF6577) else ModernAmber, label = "timer_urgency")
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(String.format(Locale.ROOT, "%02d:%02d", state.remainingSeconds / 60, state.remainingSeconds % 60),
-            fontSize = 44.sp, lineHeight = 52.sp, fontWeight = FontWeight.Black,
-            color = TextPrimary, modifier = Modifier.testTag("countdown"))
-        Text(if (state.isTimerPaused) { if (ne) "मध्यान्तर • समय रोकिएको छ" else "INTERMISSION • PAUSED" }
-            else if (state.remainingSeconds <= 10) { if (ne) "अन्तिम मौका!" else "THE GRAND FINALE!" }
-            else { if (ne) "नबोली अभिनय गर्नुहोस्" else "LET YOUR ACTING DO THE TALKING" },
-            color = ModernAmber, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+            fontSize = 48.sp, lineHeight = 56.sp, fontWeight = FontWeight.Black,
+            color = TextPrimary, modifier = Modifier.weight(1f).testTag("countdown"))
+        FilledTonalButton(onClick = onPause, modifier = Modifier.testTag("pause_timer_button")) {
+            Text(if (state.isTimerPaused) { if (ne) "जारी" else "Resume" } else { if (ne) "रोकौँ" else "Pause" })
+        }
+        }
+        Text(if (state.isTimerPaused) { if (ne) "समय रोकिएको छ" else "Paused" }
+            else if (state.remainingSeconds <= 10) { if (ne) "१० सेकेन्डभन्दा कम बाँकी!" else "10 seconds or less!" }
+            else { if (ne) "नबोली अभिनय गर्नुहोस्" else "No talking. Just acting." },
+            color = accent, style = MaterialTheme.typography.labelMedium)
+        LinearProgressIndicator(
+            progress = { (state.remainingSeconds.toFloat() / state.settings.timerDurationSeconds.coerceAtLeast(1)).coerceIn(0f, 1f) },
+            modifier = Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(50)),
+            color = accent, trackColor = ModernCard)
     }
 }
 
 @Composable
-private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit, showPoster: Boolean) {
-    CinemaPanel {
-        AnimatedContent(targetState = state.currentMovie, label = "movie_skip") { movie ->
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (state.isCardRevealed && movie != null) {
-                    if (showPoster) MoviePosterBadge(movie, width = 74.dp, height = 100.dp)
+private fun SecretFilm(state: GameUiState, ne: Boolean, onReveal: () -> Unit) {
+    AnimatedContent(targetState = state.currentMovie, label = "movie_skip", modifier = Modifier.fillMaxSize()) { movie ->
+        BoxWithConstraints(Modifier.fillMaxSize().clip(RoundedCornerShape(28.dp)).background(ModernSurface)) {
+            if (state.isCardRevealed && movie != null) {
+                MoviePosterArt(movie, Modifier.fillMaxSize())
+                Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = .15f), Color.Black.copy(alpha = .3f), Color.Black.copy(alpha = .95f)))))
+                Column(Modifier.align(Alignment.BottomStart).fillMaxWidth().heightIn(max = (maxHeight - 52.dp).coerceAtLeast(80.dp))
+                    .verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("${movie.year} · ${movie.genre}", color = Color.White.copy(alpha = .75f), style = MaterialTheme.typography.labelMedium)
                     Text(if (ne && movie.nativeTitle.isNotBlank()) movie.nativeTitle else movie.title,
-                        style = MaterialTheme.typography.headlineSmall, color = TextPrimary, fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center, modifier = Modifier.testTag("movie_title"))
-                    if (ne && movie.nativeTitle.isNotBlank()) Text(movie.title, color = TextSecondary, textAlign = TextAlign.Center)
-                    Text("${movie.year} • ${movie.genre}", color = TextSecondary, style = MaterialTheme.typography.labelMedium)
-                    if (movie.actors.isNotBlank()) Text(movie.actors, color = TextSecondary, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)
-                    if (movie.hint.isNotBlank()) Text(movie.hint, color = TextSecondary, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall)
-                } else {
-                    Text(if (ne) "गोप्य चलचित्र" else "FOR THE ACTOR’S EYES", color = ModernAmber)
-                    Text(if (ne) "आफ्नो फिल्म हेर्नुहोस्।" else "Ready for your close-up?", color = TextPrimary, textAlign = TextAlign.Center)
+                        style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.testTag("movie_title"))
+                    if (ne && movie.nativeTitle.isNotBlank()) Text(movie.title, color = Color.White.copy(alpha = .8f), style = MaterialTheme.typography.bodySmall)
+                    if (movie.actors.isNotBlank()) Text(movie.actors, color = Color.White.copy(alpha = .75f), style = MaterialTheme.typography.bodySmall)
                 }
-                CinemaButton(if (state.isCardRevealed) { if (ne) "फिल्म लुकाउनुहोस्" else "Hide film" } else { if (ne) "फिल्म हेर्नुहोस्" else "Reveal film" }, onReveal,
-                    Modifier.fillMaxWidth().testTag("reveal_movie_button"), secondary = true)
+            } else {
+                Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(if (ne) "चलचित्र लुकाइएको छ" else "Film hidden", color = TextPrimary, style = MaterialTheme.typography.headlineSmall)
+                    Text(if (ne) "कलाकारले मात्र हेर्नुहोस्" else "For the actor’s eyes only", color = TextSecondary)
+                }
+            }
+            FilledTonalButton(onClick = onReveal, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp).testTag("reveal_movie_button"),
+                colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Black.copy(alpha = .65f), contentColor = Color.White)) {
+                Text(if (state.isCardRevealed) { if (ne) "लुकाउनुहोस्" else "Hide" } else { if (ne) "फिल्म हेर्नुहोस्" else "Reveal" })
             }
         }
     }
 }
 
 @Composable
-private fun ActingControls(state: GameUiState, ne: Boolean, correct: () -> Unit, pass: () -> Unit, skip: () -> Unit, pause: () -> Unit) {
+private fun ActingControls(state: GameUiState, ne: Boolean, correct: () -> Unit, pass: () -> Unit, skip: () -> Unit) {
     val canGuess = state.isTimerRunning && state.remainingSeconds > 0
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         CinemaButton(if (ne) "मिल्यो! +१" else "CORRECT! +1", correct, Modifier.fillMaxWidth().testTag("guess_correct_button"), enabled = canGuess)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CinemaButton(if (ne) "पास" else "Pass", pass, Modifier.weight(1f).testTag("guess_wrong_button"), secondary = true, enabled = canGuess)
             CinemaButton(if (ne) "फिल्म फेरौँ" else "Skip film", skip, Modifier.weight(1f).testTag("skip_movie_button"), secondary = true, enabled = canGuess)
-            CinemaButton(if (state.isTimerPaused) { if (ne) "जारी" else "Resume" } else { if (ne) "रोकौँ" else "Pause" }, pause, Modifier.weight(1f).testTag("pause_timer_button"), secondary = true)
         }
     }
 }
+

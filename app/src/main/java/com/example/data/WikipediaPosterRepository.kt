@@ -157,12 +157,12 @@ object WikipediaPosterRepository {
         )
 
         for (slug in slugCandidates) {
-            // Strategy 1: Wikipedia REST API summary
-            var url = tryFetchWikipediaSummary(slug)
+            // Request a card-sized image first; summaries often return a small thumbnail.
+            var url = tryFetchMediaWikiPageImages(slug)
             
-            // Strategy 2: MediaWiki pageimages action API
+            // Keep the existing summary endpoint as a fallback.
             if (url.isNullOrEmpty()) {
-                url = tryFetchMediaWikiPageImages(slug)
+                url = tryFetchWikipediaSummary(slug)
             }
 
             // Strategy 3: MediaWiki generator=images prop=imageinfo (extracts all images on page)
@@ -187,6 +187,14 @@ object WikipediaPosterRepository {
         null
     }
 
+    internal fun selectPosterSource(json: JSONObject, preferOriginal: Boolean = false): String? {
+        val fields = if (preferOriginal) listOf("originalimage", "original", "thumbnail")
+            else listOf("thumbnail", "original", "originalimage")
+        return fields.firstNotNullOfOrNull { field ->
+            json.optJSONObject(field)?.optString("source")?.takeIf { it.startsWith("https://") || it.startsWith("http://") }
+        }
+    }
+
     private fun cleanTitle(title: String): String {
         return title
             .replace(" (DDLJ)", "")
@@ -209,11 +217,7 @@ object WikipediaPosterRepository {
                 if (!response.isSuccessful) return null
                 val body = response.body?.string() ?: return null
                 val json = JSONObject(body)
-                val thumbnail = json.optJSONObject("thumbnail")
-                val originalImage = json.optJSONObject("originalimage")
-
-                val source = thumbnail?.optString("source")
-                    ?: originalImage?.optString("source")
+                val source = selectPosterSource(json, preferOriginal = true)
 
                 if (!source.isNullOrEmpty() && source.startsWith("http")) {
                     source
@@ -229,7 +233,7 @@ object WikipediaPosterRepository {
     private fun tryFetchMediaWikiPageImages(slug: String): String? {
         return try {
             val encoded = URLEncoder.encode(slug, "UTF-8").replace("+", "%20")
-            val url = "https://en.wikipedia.org/w/api.php?action=query&titles=$encoded&prop=pageimages&format=json&pithumbsize=600"
+            val url = "https://en.wikipedia.org/w/api.php?action=query&titles=$encoded&prop=pageimages&format=json&piprop=thumbnail%7Coriginal&pithumbsize=1024&pilicense=any"
             val request = Request.Builder()
                 .url(url)
                 .header("User-Agent", "MovieCharadesApp/1.0 (Android; charades_game@gmail.com) Mozilla/5.0")
@@ -247,8 +251,7 @@ object WikipediaPosterRepository {
                 while (keys.hasNext()) {
                     val key = keys.next()
                     val pageObj = pages.optJSONObject(key) ?: continue
-                    val thumbnail = pageObj.optJSONObject("thumbnail")
-                    val source = thumbnail?.optString("source")
+                    val source = selectPosterSource(pageObj)
                     if (!source.isNullOrEmpty() && source.startsWith("http")) {
                         return source
                     }

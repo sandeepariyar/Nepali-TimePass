@@ -21,6 +21,7 @@ class GameSoundEffects(context: Context) : AutoCloseable {
     private val request = if (Build.VERSION.SDK_INT >= 26) AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
         .setAudioAttributes(attributes).setOnAudioFocusChangeListener(listener).build() else null
     fun playTick(pitchMultiplier: Float = 1f) = cue(doubleArrayOf(180.0 * pitchMultiplier), 70, true)
+    fun playTenSecondWarning() = cue(doubleArrayOf(523.25, 659.25, 880.0), 115)
     fun playUiTap() = cue(doubleArrayOf(440.0), 45, true)
     fun playCorrectDing() = cue(doubleArrayOf(587.33, 880.0), 150)
     fun playWrongBuzz() = cue(doubleArrayOf(220.0, 164.81), 120, true)

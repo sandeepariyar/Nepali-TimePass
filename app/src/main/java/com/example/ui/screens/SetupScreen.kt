@@ -1,6 +1,14 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -49,7 +57,7 @@ fun SetupScreen(
     if (rules) RulesDialog(onDismiss = { rules = false }, isNepali = ne)
     if (custom) AddCustomMovieDialog(onDismiss = { custom = false }, onAddCustomMovie = onAddCustomMovie, isNepali = ne)
     if (settings) AlertDialog(onDismissRequest = { settings = false },
-        title = { Text(if (ne) "खेल सेटिङ" else "Set the scene") },
+        title = { Text(if (ne) "खेल सेटिङ" else "Game settings") },
         text = { Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(if (ne) "पालोको समय" else "Round duration")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -71,12 +79,12 @@ fun SetupScreen(
             TextButton(onClick = onToggleAppLanguage) { Text(if (ne) "ENGLISH" else "नेपाली", color = ModernAmber) }
             TextButton(onClick = { rules = true }) { Text(if (ne) "नियम" else "How to play", color = TextPrimary) }
         }
-        CinemaHeading(if (ne) "आजको रमाइलो यहीँबाट" else "THE COURTYARD IS OPEN", if (ne) "नेपाली टाइमपास" else "Nepali TimePass",
-            if (ne) "आफ्नो ग्याङ छान्नुहोस्। मञ्चमा छाउनुहोस्।" else "Gather your gang. Steal the scene.")
-        CinemaButton(if (ne) "खेल सुरु गरौँ • ${uiState.settings.timerDurationSeconds}s" else "LET’S PLAY • ${uiState.settings.timerDurationSeconds}s",
+        CinemaHeading(if (ne) "रमाइलो सुरु गरौँ" else "PARTY MODE", if (ne) "नेपाली टाइमपास" else "Nepali TimePass",
+            if (ne) "आफ्नो ग्याङ छान्नुहोस्। मञ्चमा छाउनुहोस्।" else "Your friends. Your films. Your game.")
+        CinemaButton(if (ne) "खेल सुरु गरौँ • ${uiState.settings.timerDurationSeconds}s" else "Start game • ${uiState.settings.timerDurationSeconds}s",
             onStartGame, Modifier.fillMaxWidth().testTag("start_game_button"), enabled = uiState.totalMoviesCount > 0)
         CinemaPanel {
-            Text(if (ne) "०१ / ग्याङको भिडन्त" else "01 / THE GANGS", color = ModernAmber)
+            Text(if (ne) "तपाईंका ग्याङ" else "Your gangs", color = ModernAmber)
             GangEditor(uiState.team1, ne, onTeam1NameChange, onTeam1ColorChange, onRandomizeTeam1)
             HorizontalDivider(color = ModernCardAlt)
             GangEditor(uiState.team2, ne, onTeam2NameChange, onTeam2ColorChange, onRandomizeTeam2)
@@ -85,7 +93,7 @@ fun SetupScreen(
             }
         }
         CinemaPanel {
-            Text(if (ne) "०२ / आजको फिल्म शो" else "02 / TONIGHT’S PROGRAMME", color = ModernAmber)
+            Text(if (ne) "चलचित्र छान्नुहोस्" else "Pick your cinema", color = ModernAmber)
             MovieLanguage.entries.filter { it != MovieLanguage.ALL }.forEach { category ->
                 val label = if (ne) when(category) {
                     MovieLanguage.NEPALI -> "नेपाली चलचित्र"
@@ -94,8 +102,11 @@ fun SetupScreen(
                     MovieLanguage.SOUTH_INDIAN -> "दक्षिण भारतीय चलचित्र"
                     else -> "सबै चलचित्र"
                 } else category.displayName
-                FilterChip(selected = category in uiState.settings.selectedLanguages,
-                    onClick = { onToggleLanguage(category) }, modifier = Modifier.fillMaxWidth().testTag("category_${category.name}"),
+                val chosen = category in uiState.settings.selectedLanguages
+                val chipScale by animateFloatAsState(if (chosen) 1f else .985f,
+                    spring(stiffness = 600f), label = "category_selection")
+                FilterChip(selected = chosen, border = null, shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                    onClick = { onToggleLanguage(category) }, modifier = Modifier.fillMaxWidth().graphicsLayer { scaleX = chipScale; scaleY = chipScale }.testTag("category_${category.name}"),
                     label = { Text(label, modifier = Modifier.padding(vertical = 8.dp)) })
             }
             TextButton(onClick = { onSetLanguagePreset(MovieLanguage.entries.filter { it != MovieLanguage.ALL }.toSet()) }) { Text(if (ne) "सबै मिसाउनुहोस्" else "Mix every cinema") }
@@ -115,16 +126,18 @@ fun SetupScreen(
 private fun GangEditor(team: Team, ne: Boolean, onName: (String) -> Unit, onColor: (Long) -> Unit, onRandom: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            AnimatedContent(targetState = team.name, label = "gang_shuffle") { shuffledName ->
+            AnimatedContent(targetState = team.name,
+                transitionSpec = { (fadeIn() + scaleIn(initialScale = .82f)) togetherWith (fadeOut() + scaleOut(targetScale = .92f)) },
+                label = "gang_shuffle") { shuffledName ->
                 TeamEmblem(team.id, Color(team.colorHex), modifier = Modifier.semantics { contentDescription = shuffledName }, size = 64.dp)
             }
-            OutlinedTextField(team.name, { onName(it.take(48)) }, label = { Text(if (ne) "ग्याङ ${team.id}" else "Gang ${team.id}") },
-                modifier = Modifier.weight(1f).testTag("team_${team.id}_name"), maxLines = 2)
+            TextField(team.name, { onName(it.take(48)) }, label = { Text(if (ne) "ग्याङ ${team.id}" else "Gang ${team.id}") },
+                modifier = Modifier.weight(1f).testTag("team_${team.id}_name"), maxLines = 2, shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp), colors = TextFieldDefaults.colors(focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
         }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(0.dp)) {
             GangColorPalette.COLORS.forEach { color ->
                 IconButton(onClick = { onColor(color.colorHex) }, modifier = Modifier.size(48.dp).semanticsColor(if (ne) color.nameNepali else color.name, team.colorHex == color.colorHex)) {
-                    Surface(Modifier.size(28.dp), shape = CircleShape, color = Color(color.colorHex),
+                    Surface(Modifier.size(22.dp), shape = CircleShape, color = Color(color.colorHex),
                         border = BorderStroke(if (team.colorHex == color.colorHex) 3.dp else 0.dp, TextPrimary)) {
                         androidx.compose.foundation.layout.Box(Modifier)
                     }
