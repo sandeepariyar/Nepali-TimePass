@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.model.Movie
 import com.example.model.MovieDifficulty
 import com.example.model.MovieLanguage
@@ -67,12 +69,13 @@ fun AddCustomMovieDialog(
     var customActors by remember { mutableStateOf("") }
     var addSuccessMsg by remember { mutableStateOf("") }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(
             shape = RoundedCornerShape(20.dp),
             color = ModernSurface,
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 560.dp)
+                .fillMaxWidth(.92f)
                 .padding(8.dp)
         ) {
             Column(
