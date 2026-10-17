@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 /** Bounded form layout: input fields do not participate in AlertDialog text intrinsics. */
 @Composable
@@ -21,9 +22,9 @@ internal fun HomeFilmLibraryDialog(
     onCustom: () -> Unit, onDismiss: () -> Unit
 ) {
     val title = if (ne) "चलचित्र सङ्ग्रह" else "Film library"
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.testTag("film_library_dialog").semantics { paneTitle = title }) {
+            modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth(.92f).testTag("film_library_dialog").semantics { paneTitle = title }) {
             Column(Modifier.fillMaxWidth().heightIn(max = 520.dp).padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(title, style = MaterialTheme.typography.headlineSmall)

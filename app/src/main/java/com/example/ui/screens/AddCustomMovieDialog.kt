@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.model.Movie
 import com.example.model.MovieDifficulty
 import com.example.model.MovieLanguage
@@ -67,12 +68,13 @@ fun AddCustomMovieDialog(
     var customActors by remember { mutableStateOf("") }
     var addSuccessMsg by remember { mutableStateOf("") }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(
             shape = RoundedCornerShape(20.dp),
             color = ModernSurface,
             modifier = Modifier
-                .fillMaxWidth()
+                .widthIn(max = 560.dp)
+                .fillMaxWidth(.92f)
                 .padding(8.dp)
         ) {
             Column(

@@ -14,13 +14,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.model.*
 
 @Composable
 internal fun HomeGangEditDialog(team: Team, ne: Boolean, onName: (String) -> Unit,
     onColor: (Long) -> Unit, onShuffle: () -> Unit, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(24.dp)) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth(.92f), shape = RoundedCornerShape(24.dp)) {
             Column(Modifier.fillMaxWidth().heightIn(max = 440.dp).padding(20.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(if (ne) "ग्याङ ${team.id}" else "Gang ${team.id}", style = MaterialTheme.typography.headlineSmall)
