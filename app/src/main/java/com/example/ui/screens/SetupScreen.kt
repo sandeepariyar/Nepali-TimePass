@@ -33,7 +33,7 @@ import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material.icons.filled.LibraryMovies
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
@@ -155,7 +155,7 @@ fun SetupScreen(
 
     Scaffold(containerColor = HomeBg, bottomBar = {
         Surface(color = HomeBg, shadowElevation = 12.dp) {
-            Column(Modifier.navigationBarsPadding().padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 12.dp)) {
+            Column(Modifier.navigationBarsPadding().imePadding().padding(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 12.dp)) {
                 Button(
                     onClick = onStartGame, enabled = uiState.totalMoviesCount > 0, interactionSource = startInteraction,
                     modifier = Modifier.fillMaxWidth().heightIn(min = 66.dp).graphicsLayer { scaleX = startScale; scaleY = startScale }.testTag("start_game_button"),
@@ -235,7 +235,7 @@ fun SetupScreen(
             Spacer(Modifier.height(12.dp))
             HomePanel {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LibraryMovies, null, tint = Color(0xFFFFB64F))
+                    Icon(Icons.Default.VideoLibrary, null, tint = Color(0xFFFFB64F))
                     Spacer(Modifier.width(9.dp))
                     Column(Modifier.weight(1f)) {
                         Text(if (ne) "चलचित्र छान्नुहोस्" else "Pick your cinema", fontSize = 21.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -303,7 +303,7 @@ fun SetupScreen(
                         Surface(shape = RoundedCornerShape(50),
                             color = if (active) Lime else Color(0xFF252D41),
                             border = BorderStroke(1.dp, if (active) Lime else CardStroke),
-                            modifier = Modifier.heightIn(min = 48.dp).selectable(selected = active, role = Role.RadioButton, onClick = { onTimerDurationChange(duration) }).testTag("duration_$duration")) {
+                            modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp).selectable(selected = active, role = Role.RadioButton, onClick = { onTimerDurationChange(duration) }).testTag("duration_$duration")) {
                             Text("${duration}s", Modifier.padding(horizontal = 12.dp, vertical = 11.dp),
                                 color = if (active) HomeBg else Color.White,
                                 fontWeight = if (active) FontWeight.Black else FontWeight.Medium, fontSize = 13.sp)
